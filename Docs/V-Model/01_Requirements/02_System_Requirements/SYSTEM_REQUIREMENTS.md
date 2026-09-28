@@ -2,7 +2,7 @@
 
 ## 1. Belgenin amacı
 
-Bu belge, `MEVCUT_SISTEM_GEREKSINIMLERI.md` içindeki mevcut ürün kapsamını temel alarak Balcas sisteminin daha açık, tutarlı, doğrulanabilir ve yeniden geliştirmeye elverişli gereksinimlerini tanımlar.
+Bu belge, `CURRENT_SYSTEM_REQUIREMENTS.md` içindeki mevcut ürün kapsamını temel alarak Balcas sisteminin daha açık, tutarlı, doğrulanabilir ve yeniden geliştirmeye elverişli gereksinimlerini tanımlar.
 
 Bu belge:
 
@@ -14,7 +14,7 @@ Bu belge:
 - belirli bir UI framework'ü, programlama dili veya görüntü işleme kütüphanesi dayatmaz.
 
 Belge statüsü: **İnceleme taslağı**  
-Temel belge: `MEVCUT_SISTEM_GEREKSINIMLERI.md`  
+Temel belge: `CURRENT_SYSTEM_REQUIREMENTS.md`  
 Hedef okuyucular: operasyon, proses, otomasyon/PLC, görüntü işleme, yazılım ve test ekipleri
 
 ## 2. Gereksinim dili
@@ -424,7 +424,7 @@ Karar tablosu:
 | CFG-012 | ZORUNLU | Ayar kaydı atomik olmalı; yarım veya bozuk dosya önceki geçerli ayarı kaybettirmemelidir. |
 | CFG-013 | ZORUNLU | Her kaydedilmiş ayar seti versiyon ve değiştirilme zamanı içermelidir. |
 
-Mevcut varsayılan değerlerin başlangıç adayı olarak kullanılması için `MEVCUT_SISTEM_GEREKSINIMLERI.md` bölüm 6 esas alınır. Varsayılanlar proses doğrulaması yapılmadan kalibrasyon değeri olarak kabul edilmemelidir.
+Mevcut varsayılan değerlerin başlangıç adayı olarak kullanılması için `CURRENT_SYSTEM_REQUIREMENTS.md` bölüm 6 esas alınır. Varsayılanlar proses doğrulaması yapılmadan kalibrasyon değeri olarak kabul edilmemelidir.
 
 ## 14. Kayıt, log ve veri saklama
 
