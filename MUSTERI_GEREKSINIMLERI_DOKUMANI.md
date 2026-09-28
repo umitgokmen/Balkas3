@@ -4,7 +4,7 @@
 |---|---|
 | Belge kodu | BLC-MGD-001 |
 | Belge türü | Müşteri Gereksinimleri Dokümanı (MGD / URS) |
-| Sürüm | 0.3 |
+| Sürüm | 0.4 |
 | Durum | Müşteri inceleme taslağı |
 | Tarih | 28.09.2026 |
 | Hazırlayan |  |
@@ -113,7 +113,7 @@ Bir gereksinimin karşılandığı; test, inceleme, gösterim veya ölçüm yön
 | MGR-INS-008 | Zorunlu | Sistem tomruk sehimini 360° çevresinde değerlendirmeli; ayarlardan “Tek yönlü”, “İki yönlü” veya “Her ikisi” hesap modu seçilebilmelidir. Seçilen moda ait sehim değeri/değerleri, ilgili açı ve konumla birlikte bildirilmelidir. | Referans veri testi/Gösterim |
 | MGR-INS-009 | Zorunlu | Flare bölgesi ve güvenilir olmadığı belirlenen ölçüm parçaları normal gövde çapı ve sehim hesabını bozmamalıdır. | Referans veri testi |
 | MGR-INS-010 | Zorunlu | Ölçümün geçerli sayılması için tanımlı sektörlerin her birinde en az bir geçerli veri bulunmalıdır. Herhangi bir sektörde hiç geçerli veri yoksa sistem sayısal bir ölçüm uydurmamalı ve sonucu “Ölçüm Hatası” olarak vermelidir. | Hata senaryosu testi |
-| MGR-INS-011 | Zorunlu | Uzunluk, çap ve sehim ölçümlerinin doğrulanmış referans değere göre mutlak hatası en fazla 10 mm olmalıdır. Ayrı bir tekrarlanabilirlik kabul toleransı aranmayacaktır. | Referans obje/veri testi |
+| MGR-INS-011 | Zorunlu | Aynı referans obje/veri, aynı koşullar ve aynı ayarlarla tekrar ölçüldüğünde uzunluk, çap ve sehim sonuçlarının her biri için elde edilen en büyük ve en küçük değer arasındaki fark en fazla 10 mm olmalıdır. | Tekrarlanabilirlik testi |
 | MGR-INS-012 | Zorunlu | Sehim ölçümü ve ürün kararı, denetim başlangıcında seçili olan onaylı hesap moduyla tamamlanmalıdır; ölçüm sırasında otomatik olarak başka bir moda geçilmemelidir. | Tasarım incelemesi/Test |
 
 ### 7.3 Karar kuralları
@@ -199,7 +199,7 @@ Bir gereksinimin karşılandığı; test, inceleme, gösterim veya ölçüm yön
 | MKA-008 | Geçersiz bir ayar kaydedilmeye çalışılır. | Kayıt reddedilir ve açıklayıcı alan hatası gösterilir. |
 | MKA-009 | On veri setinden biri bozukken toplu simülasyon çalıştırılır. | Bozuk veri hata olarak raporlanır; diğer dokuz veri işlenir ve özet on kayıt içerir. |
 | MKA-010 | Çalışan denetim sırasında karar ayarı değiştirilir. | Mevcut denetim eski ayarla, sonraki denetim yeni ayarla tamamlanır. |
-| MKA-011 | Bilinen ölçülü referans obje/veri işlenir. | Ekran, kayıt ve PLC değerleri aynı birimdedir; uzunluk, çap ve sehim sonuçlarının referans değere göre mutlak hatası 10 mm'yi aşmaz. Ayrı bir tekrarlanabilirlik toleransı aranmaz. |
+| MKA-011 | Aynı referans obje/veri, aynı koşullar ve aynı ayarlarla tekrarlı olarak işlenir. | Ekran, kayıt ve PLC değerleri aynı birimdedir; uzunluk, çap ve sehim sonuçlarının her biri için elde edilen en büyük ve en küçük değer arasındaki fark 10 mm'yi aşmaz. |
 | MKA-012 | Uygulama beklenmeyen kapanma sonrasında yeniden açılır. | Eski sonuç yeni sonuç gibi yayınlanmaz; PLC ile güvenli başlangıç durumu kurulur. |
 | MKA-013 | Test yapılandırmasında kameralardan biri veya ikisi devre dışı bırakılır. | Sistem yalnızca etkin kameraları bekler, devre dışı kameraları açıkça gösterir ve test denetimini etkin kamera verileriyle çalıştırır. |
 | MKA-014 | Geçerli ölçümde flare bulunur ve sehim sınır içindedir. | Flare kaydedilir; tek başına ret oluşturmaz ve sonuç “Kabul” olur. |
@@ -230,7 +230,7 @@ Asgari teslimat kapsamı aşağıdakileri içerir:
 Müşteri veya müşterinin yetkilendirdiği taraf aşağıdaki girdileri sağlamalı ve onaylamalıdır:
 
 - İsteğe bağlı denetim süresi uyarısının kullanılacağı durumlarda uyarı süresi
-- Ölçüm aralıkları ve 10 mm doğruluk ölçütünün doğrulanacağı referanslar
+- Ölçüm aralıkları ve 10 mm tekrarlanabilirlik parametresinin doğrulanacağı referanslar
 - Metre başına izin verilen azami sehim
 - Üç kameranın yerleşimi, görüş alanı ve kalibrasyon referansları
 - PLC protokolü, etiket listesi ve veri tipleri
@@ -241,14 +241,6 @@ Müşteri veya müşterinin yetkilendirdiği taraf aşağıdaki girdileri sağla
 - FAT ve SAT ortamı, test zamanı ve kabul yetkilileri
 
 Bu girdiler sağlanmadan ilgili gereksinimin nihai doğrulaması yapılamaz.
-
-## 12. Müşteri kararları
-
-“Onaylandı” durumundaki maddeler bu sürümde bağlayıcı iş kuralına dönüştürülmüştür. “Açık” maddeler nihai kabulten önce müşteri tarafından netleştirilmelidir.
-
-| Kimlik | Konu | Karar | Durum / tarih |
-|---|---|---|---|
-MK-012 | Ölçüm doğruluğu ve tekrarlanabilirlik toleransları nedir? | Ölçümlerde azami mutlak hata 10 mm'dir; ayrı bir tekrarlanabilirlik kabul toleransı aranmaz. | Onaylandı / 28.09.2026 |
 
 
 ## 13. İzlenebilirlik ve değişiklik yönetimi
@@ -268,8 +260,3 @@ Onaydan sonra yapılacak kapsam, iş kuralı, arayüz veya kabul ölçütü değ
 
 ## Ek A — Revizyon geçmişi
 
-| Sürüm | Tarih | Değişiklik | Hazırlayan |
-|---|---|---|---|
-| 0.3 | 28.09.2026 | MK-004, MK-007, MK-008, MK-011, MK-012 ve MK-013 kararları onaylanarak ilgili gereksinim ve kabul senaryolarına işlendi |  |
-| 0.2 | 28.09.2026 | PLC sonuç politikası, tek ölçüm yöntemi, kamera kullanımı, sehim, flare ve yön kararları güncellendi; Modbus kapsamdan çıkarıldı |  |
-| 0.1 | 28.09.2026 | İlk müşteri inceleme taslağı |  |
