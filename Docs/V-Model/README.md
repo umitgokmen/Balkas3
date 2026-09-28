@@ -35,5 +35,5 @@ This directory organizes the project documentation according to the V-Model. The
 
 ## Current documents
 
-- `01_Gereksinimler/01_Musteri_Gereksinimleri/MUSTERI_GEREKSINIMLERI_DOKUMANI.md`
+- `01_Gereksinimler/01_Musteri_Gereksinimleri/CUSTOMER_REQUIREMENTS_DOCUMENT.md`
 - `01_Gereksinimler/02_Sistem_Gereksinimleri/SISTEM_GEREKSINIMLERI.md`

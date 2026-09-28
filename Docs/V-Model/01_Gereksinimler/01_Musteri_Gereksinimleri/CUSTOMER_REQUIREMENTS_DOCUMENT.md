@@ -1,262 +1,261 @@
-# Balcas Müşteri Gereksinimleri Dokümanı
+# Balcas Customer Requirements Document
 
-| Belge alanı | Değer |
+| Document field | Value |
 |---|---|
-| Belge kodu | BLC-MGD-001 |
-| Belge türü | Müşteri Gereksinimleri Dokümanı (MGD / URS) |
-| Sürüm | 0.4 |
-| Durum | Müşteri inceleme taslağı |
-| Tarih | 28.09.2026 |
-| Hazırlayan |  |
-| Müşteri | Balcas |
+| Document code | BLC-MGD-001 |
+| Document type | Customer Requirements Document (CRD / URS) |
+| Version | 0.4 |
+| Status | Draft for customer review |
+| Date | 28 September 2026 |
+| Prepared by |  |
+| Customer | Balcas |
 
 
-## 1. Amaç
+## 1. Purpose
 
-## 2. İş ihtiyacı ve hedefler
+## 2. Business need and objectives
 
-Balcas, üretim hattındaki her tomruğun üç boyutlu verisini otomatik olarak inceleyen ve sonucu PLC'ye ileten güvenilir bir kalite kontrol çözümüne ihtiyaç duymaktadır.
+Balcas requires a reliable quality-control solution that automatically inspects the three-dimensional data of every log on the production line and communicates the result to the PLC.
 
-Sistemin iş hedefleri şunlardır:
+The system's business objectives are:
 
-- Her geçerli hat tetiklemesi için yalnızca bir tomruk denetimi yapmak.
-- Tomruğun uzunluk, çap, yön, dip şişkinliği (flare) ve sehim bilgilerini üretmek.
-- Geçerli ölçüm ile ürün reddini birbirinden ayırmak.
-- Güvenilir ölçüm üretilemediğinde durumu “Ölçüm Hatası” olarak kaydetmek; üretim maliyeti kararı gereği PLC'ye `Outcome=true` göndererek tomruğun hatta kabul yönünde ilerlemesini sağlamak.
-- Sonuçları operatöre anlaşılır biçimde göstermek ve PLC'ye güvenli biçimde aktarmak.
-- Üretim sorunlarının incelenebilmesi için denetimleri izlenebilir şekilde kaydetmek.
-- Kayıtlı verilerle üretim hattından bağımsız test ve tekrar analiz yapabilmek.
+- Perform exactly one log inspection for each valid line trigger.
+- Produce the log's length, diameter, orientation, butt flare, and deflection information.
+- Distinguish a valid product rejection from a measurement failure.
+- When a reliable measurement cannot be produced, record the condition as "Measurement Failure" and, in accordance with the production-loss business rule, send `Outcome=true` to the PLC so that the log continues along the acceptance path.
+- Present results clearly to the operator and transfer them safely to the PLC.
+- Record inspections traceably so that production issues can be investigated.
+- Support testing and repeat analysis independently of the production line by using recorded data.
 
-## 3. Kapsam
+## 3. Scope
 
-### 3.1 Kapsam dahilinde
+### 3.1 In scope
 
-- Üç bağımsız 3B kamera kanalından veri alınması
-- Kamera verilerinin ortak koordinat sisteminde birleştirilmesi
-- Tomruğun tespit edilmesi ve ölçüm verisinin kalite kontrolü
-- Uzunluk, çap, yön, flare ve sehim ölçümleri
-- Kabul, ret ve ölçüm hatası kararının oluşturulması
-- PLC ile tetik, durum, sonuç ve onay bilgi alışverişi
-- Operatör ekranları, ayarlar ve teşhis görünümü
-- Denetim sonuçlarının, hataların ve seçili ham verilerin kaydedilmesi
-- Tekli ve toplu kayıtlı veri simülasyonu
+- Acquiring data from three independent 3D camera channels
+- Combining camera data in a common coordinate system
+- Detecting the log and checking the quality of the measurement data
+- Measuring length, diameter, orientation, flare, and deflection
+- Producing acceptance, rejection, and measurement-failure decisions
+- Exchanging trigger, status, result, and acknowledgement information with the PLC
+- Operator screens, settings, and diagnostic views
+- Recording inspection results, errors, and selected raw data
+- Single-dataset and batch simulation using recorded data
 
-### 3.2 Kapsam dışında
+### 3.2 Out of scope
 
-Aşağıdaki işler ayrıca yazılı olarak kapsam içine alınmadıkça bu teslimata dahil değildir:
+The following activities are not included in this delivery unless they are separately added to the scope in writing:
 
-- Üretim hattındaki mekanik hareketlerin PLC adına kontrol edilmesi
-- Tomruğun fiziksel olarak yönlendirilmesi, durdurulması veya ayrılması
-- Modbus haberleşmesi ve Modbus register entegrasyonu
-- ERP/MES ya da bulut sistemi entegrasyonu
-- Yapay zekâ tabanlı kalite sınıflandırması
-- Otomatik kamera kalibrasyonu
-- Kurumsal kullanıcı ve rol yönetimi
-- Kamera, PLC, bilgisayar, ağ ve mekanik montaj tedariki
+- Controlling mechanical movements on the production line on behalf of the PLC
+- Physically directing, stopping, or separating the log
+- Modbus communication and Modbus register integration
+- ERP/MES or cloud-system integration
+- AI-based quality classification
+- Automatic camera calibration
+- Enterprise user and role management
+- Supply of cameras, PLCs, computers, network equipment, or mechanical installation
 
-## 4. Paydaşlar ve kullanıcılar
+## 4. Stakeholders and users
 
-| Rol | Temel beklenti / sorumluluk |
+| Role | Primary expectation / responsibility |
 |---|---|
-| Operatör | Sistemin durumunu izlemek, hataları anlamak ve izin verilen komutları kullanmak |
-| Proses ve kalite sahibi | Ölçüm, tolerans ve kabul/ret kurallarını onaylamak |
-| Otomasyon/PLC ekibi | PLC veri sözleşmesini ve el sıkışma akışını onaylamak |
-| Kamera/kalibrasyon uzmanı | Kamera yerleşimi, kalibrasyon ve veri kalitesini doğrulamak |
-| Bakım/IT | Bilgisayar, ağ, depolama ve yedekleme ortamını işletmek |
-| Yazılım tedarikçisi | Onaylı gereksinimleri uygulamak, doğrulamak ve teslim etmek |
+| Operator | Monitor system status, understand errors, and use permitted commands |
+| Process and quality owner | Approve measurement, tolerance, and acceptance/rejection rules |
+| Automation/PLC team | Approve the PLC data contract and handshake sequence |
+| Camera/calibration specialist | Verify camera placement, calibration, and data quality |
+| Maintenance/IT | Operate the computer, network, storage, and backup environment |
+| Software supplier | Implement, verify, and deliver the approved requirements |
 
-## 5. Öncelik ve uygunluk dili
+## 5. Priority and compliance language
 
-| Terim | Açıklama |
+| Term | Definition |
 |---|---|
-| Zorunlu | Sistem kabulü için karşılanmalıdır. |
-| Önerilen | İşletim kalitesini artırır; uygulanmaması halinde gerekçe yazılmalıdır. |
-| Opsiyonel | Ayrı planlama veya sonraki faz kapsamında değerlendirilebilir. |
-| Karar bekliyor | Müşteri veya ilgili proses sahibi tarafından netleştirilmelidir. |
+| Mandatory | Must be satisfied for system acceptance. |
+| Recommended | Improves operational quality; a written justification is required if it is not implemented. |
+| Optional | May be considered under separate planning or in a later phase. |
+| Decision pending | Must be clarified by the customer or the relevant process owner. |
 
-Bir gereksinimin karşılandığı; test, inceleme, gösterim veya ölçüm yöntemlerinden uygun olanıyla kanıtlanacaktır.
+Compliance with a requirement shall be demonstrated by the applicable method of test, inspection, demonstration, or measurement.
 
-## 6. Genel çalışma senaryosu
+## 6. General operating scenario
 
-1. Sistem açılır, onaylı ayarları yükler ve PLC ile etkin kameralara bağlanır.
-2. Gerekli bağlantılar ve ayarlar geçerliyse sistem “Hazır” durumuna geçer.
-3. PLC yeni tomruk için denetim isteği gönderir.
-4. Sistem etkin kameralardan 3B veriyi alır ve tek bir denetim kaydı oluşturur.
-5. Verinin yeterliliği kontrol edilir; geçerliyse ölçümler ve ürün kararı hesaplanır.
-6. Sonuç PLC'ye gönderilir ve operatör ekranında gösterilir.
-7. Sistem, PLC'nin sonucu aldığını onaylamasına kadar sonucu değiştirmeden tutar.
-8. Onaydan sonra sonuç alanları temizlenir ve sistem bir sonraki tomruk için hazır olur.
+1. The system starts, loads the approved settings, and connects to the PLC and enabled cameras.
+2. If the required connections and settings are valid, the system enters the "Ready" state.
+3. The PLC sends an inspection request for a new log.
+4. The system acquires 3D data from the enabled cameras and creates a single inspection record.
+5. Data sufficiency is checked; if the data is valid, measurements and the product decision are calculated.
+6. The result is sent to the PLC and displayed on the operator screen.
+7. The system holds the result unchanged until the PLC acknowledges receipt.
+8. After acknowledgement, the result fields are cleared and the system becomes ready for the next log.
 
-## 7. Müşteri gereksinimleri
+## 7. Customer requirements
 
-### 7.1 Çalıştırma ve hazır olma
+### 7.1 Start-up and readiness
 
-| Kimlik | Öncelik | Gereksinim | Doğrulama |
+| ID | Priority | Requirement | Verification |
 |---|---|---|---|
-| MGR-OPS-001 | Zorunlu | Sistem açıldığında son geçerli ve onaylı ayarları yüklemelidir. | Test |
-| MGR-OPS-002 | Zorunlu | Ayarlar eksik, bozuk veya geçersizse sistem operatörü bilgilendirmeli ve güvenilir ölçüm yapıyormuş gibi davranmamalıdır. | Test |
-| MGR-OPS-003 | Zorunlu | Üretim modunda bütün etkin kameralar ve PLC haberleşmesi hazır olmadan sistem “Hazır” göstermemelidir. Varsayılan üretim yapılandırmasında üç kamera da etkin olmalıdır. | Test |
-| MGR-OPS-004 | Zorunlu | Sistem çalışma modunu “Üretim” veya “Simülasyon” olarak açıkça göstermelidir. | Gösterim |
-| MGR-OPS-005 | Zorunlu | Kontrollü kapatma ve beklenmeyen yeniden başlatma sonrasında sistem PLC ile güvenli, tanımlı bir başlangıç durumuna dönmelidir. | Test |
+| MGR-OPS-001 | Mandatory | On start-up, the system shall load the latest valid and approved settings. | Test |
+| MGR-OPS-002 | Mandatory | If settings are missing, corrupt, or invalid, the system shall inform the operator and shall not behave as though it is producing reliable measurements. | Test |
+| MGR-OPS-003 | Mandatory | In production mode, the system shall not indicate "Ready" until all enabled cameras and PLC communication are ready. All three cameras shall be enabled in the default production configuration. | Test |
+| MGR-OPS-004 | Mandatory | The system shall clearly indicate whether its operating mode is "Production" or "Simulation". | Demonstration |
+| MGR-OPS-005 | Mandatory | After a controlled shutdown or an unexpected restart, the system shall return to a safe, defined initial state with the PLC. | Test |
 
-### 7.2 Denetim ve ölçüm
+### 7.2 Inspection and measurement
 
-| Kimlik | Öncelik | Gereksinim | Doğrulama |
+| ID | Priority | Requirement | Verification |
 |---|---|---|---|
-| MGR-INS-001 | Zorunlu | Her geçerli PLC tetiklemesi yalnızca bir denetim oluşturmalıdır. Uzun süre aktif kalan bir tetik ikinci denetime neden olmamalıdır. | Test |
-| MGR-INS-002 | Zorunlu | Her denetim benzersiz bir kimliğe sahip olmalı; ekranda, loglarda, sonuçlarda ve saklanan verilerde aynı kimlik kullanılmalıdır. | İnceleme/Test |
-| MGR-INS-003 | Zorunlu | Sistem üç bağımsız 3B kamera kanalını desteklemeli ve etkin kameraların verisini aynı denetim kapsamında toplamalıdır. Üç kamera varsayılan olarak etkin olmalı; test amacıyla her kamera ayrı ayrı devre dışı bırakılabilmelidir. | Test |
-| MGR-INS-004 | Zorunlu | Sistem tomruğun uzunluğunu milimetre cinsinden ölçmelidir. | Referans obje testi |
-| MGR-INS-005 | Zorunlu | Sistem minimum, medyan ve maksimum gövde çaplarını milimetre cinsinden ölçmelidir. | Referans obje testi |
-| MGR-INS-006 | Zorunlu | Sistem tomruğun yönünü “dip önde”, “dip arkada” veya “bilinmiyor” olarak bildirmelidir. | Etiketli veri testi |
-| MGR-INS-007 | Zorunlu | Sistem flare bulunup bulunmadığını ayrı bir sonuç olarak bildirmelidir. | Etiketli veri testi |
-| MGR-INS-008 | Zorunlu | Sistem tomruk sehimini 360° çevresinde değerlendirmeli; ayarlardan “Tek yönlü”, “İki yönlü” veya “Her ikisi” hesap modu seçilebilmelidir. Seçilen moda ait sehim değeri/değerleri, ilgili açı ve konumla birlikte bildirilmelidir. | Referans veri testi/Gösterim |
-| MGR-INS-009 | Zorunlu | Flare bölgesi ve güvenilir olmadığı belirlenen ölçüm parçaları normal gövde çapı ve sehim hesabını bozmamalıdır. | Referans veri testi |
-| MGR-INS-010 | Zorunlu | Ölçümün geçerli sayılması için tanımlı sektörlerin her birinde en az bir geçerli veri bulunmalıdır. Herhangi bir sektörde hiç geçerli veri yoksa sistem sayısal bir ölçüm uydurmamalı ve sonucu “Ölçüm Hatası” olarak vermelidir. | Hata senaryosu testi |
-| MGR-INS-011 | Zorunlu | Aynı referans obje/veri, aynı koşullar ve aynı ayarlarla tekrar ölçüldüğünde uzunluk, çap ve sehim sonuçlarının her biri için elde edilen en büyük ve en küçük değer arasındaki fark en fazla 10 mm olmalıdır. | Tekrarlanabilirlik testi |
-| MGR-INS-012 | Zorunlu | Sehim ölçümü ve ürün kararı, denetim başlangıcında seçili olan onaylı hesap moduyla tamamlanmalıdır; ölçüm sırasında otomatik olarak başka bir moda geçilmemelidir. | Tasarım incelemesi/Test |
+| MGR-INS-001 | Mandatory | Each valid PLC trigger shall create exactly one inspection. A trigger that remains active for an extended period shall not cause a second inspection. | Test |
+| MGR-INS-002 | Mandatory | Each inspection shall have a unique identifier, and the same identifier shall be used on screen, in logs, in results, and in stored data. | Inspection/Test |
+| MGR-INS-003 | Mandatory | The system shall support three independent 3D camera channels and collect data from enabled cameras within the same inspection. All three cameras shall be enabled by default, and each camera shall be capable of being disabled individually for testing. | Test |
+| MGR-INS-004 | Mandatory | The system shall measure the log length in millimetres. | Reference-object test |
+| MGR-INS-005 | Mandatory | The system shall measure the minimum, median, and maximum stem diameters in millimetres. | Reference-object test |
+| MGR-INS-006 | Mandatory | The system shall report the log orientation as "butt end leading", "butt end trailing", or "unknown". | Labelled-data test |
+| MGR-INS-007 | Mandatory | The system shall report the presence or absence of flare as a separate result. | Labelled-data test |
+| MGR-INS-008 | Mandatory | The system shall evaluate log deflection around 360 degrees. The calculation mode shall be selectable in the settings as "One-way", "Two-way", or "Both". The deflection value or values for the selected mode shall be reported together with the relevant angle and position. | Reference-data test/Demonstration |
+| MGR-INS-009 | Mandatory | The flare region and measurement segments determined to be unreliable shall not distort the normal stem-diameter or deflection calculation. | Reference-data test |
+| MGR-INS-010 | Mandatory | For a measurement to be considered valid, each defined sector shall contain at least one valid data point. If any sector contains no valid data, the system shall not fabricate a numeric measurement and shall return "Measurement Failure". | Failure-scenario test |
+| MGR-INS-011 | Mandatory | When the same reference object/data is measured repeatedly under the same conditions and with the same settings, the difference between the maximum and minimum values obtained for each of length, diameter, and deflection shall not exceed 10 mm. | Repeatability test |
+| MGR-INS-012 | Mandatory | The deflection measurement and product decision shall be completed using the approved calculation mode selected at the start of the inspection; the system shall not automatically switch to another mode during measurement. | Design review/Test |
 
-### 7.3 Karar kuralları
+### 7.3 Decision rules
 
-| Kimlik | Öncelik | Gereksinim | Doğrulama |
+| ID | Priority | Requirement | Verification |
 |---|---|---|---|
-| MGR-DEC-001 | Zorunlu | Sistem üç farklı sonucu ayırmalıdır: “Kabul”, “Ret” ve “Ölçüm Hatası”. | Test |
-| MGR-DEC-002 | Zorunlu | İzin verilen sehim, tomruk uzunluğu ile müşteri tarafından onaylanan metre başına sehim sınırından hesaplanmalıdır. | Hesap kontrolü |
-| MGR-DEC-003 | Zorunlu | Geçerli ölçümde sehim izin verilen değere eşit veya küçükse sonuç “Kabul” olmalıdır. | Sınır değer testi |
-| MGR-DEC-004 | Zorunlu | Geçerli ölçümde sehim izin verilen değerden büyükse sonuç “Ret” olmalıdır. | Sınır değer testi |
-| MGR-DEC-005 | Zorunlu | Güvenilir karar üretilemeyen durumda iç sonuç “Ölçüm Hatası” olmalı; üretim kaybını azaltmak için PLC'ye `Outcome=true` gönderilerek tomruk kabul yönünde ilerletilmelidir. Ölçüm hatası, geçerli bir ölçüm kabulü gibi raporlanmamalı ve hata ayrıntıları kaydedilmelidir. | Hata senaryosu testi |
-| MGR-DEC-006 | Zorunlu | Flare bulunması tek başına ret nedeni olmamalıdır. | Kural incelemesi/Test |
-| MGR-DEC-007 | Zorunlu | Nihai sehim, ölçüm yönteminin ürettiği değer olmalı; sonuca herhangi bir sehim düzeltme katsayısı uygulanmamalıdır. | Hesap kontrolü/Test |
-| MGR-DEC-008 | Zorunlu | Tomruk yönünün belirlenememesi kabul/ret sonucunu etkilememeli; yön “Bilinmiyor” olarak kaydedilmelidir. | Kural incelemesi/Test |
-| MGR-DEC-009 | Zorunlu | Sehim hesap modu “Her ikisi” seçildiğinde tek yönlü ve iki yönlü sonuçlar ayrı ayrı raporlanmalı; kabul/ret kararında bu iki değerden büyük olan nihai sehim olarak kullanılmalıdır. | Hesap kontrolü/Test |
+| MGR-DEC-001 | Mandatory | The system shall distinguish three outcomes: "Accepted", "Rejected", and "Measurement Failure". | Test |
+| MGR-DEC-002 | Mandatory | The permitted deflection shall be calculated from the log length and the customer-approved deflection limit per metre. | Calculation check |
+| MGR-DEC-003 | Mandatory | For a valid measurement, if the deflection is equal to or less than the permitted value, the outcome shall be "Accepted". | Boundary-value test |
+| MGR-DEC-004 | Mandatory | For a valid measurement, if the deflection is greater than the permitted value, the outcome shall be "Rejected". | Boundary-value test |
+| MGR-DEC-005 | Mandatory | When a reliable decision cannot be produced, the internal outcome shall be "Measurement Failure". To reduce production loss, the system shall send `Outcome=true` to the PLC so that the log proceeds along the acceptance path. A measurement failure shall not be reported as a valid accepted measurement, and error details shall be recorded separately. | Failure-scenario test |
+| MGR-DEC-006 | Mandatory | The presence of flare alone shall not cause rejection. | Rule review/Test |
+| MGR-DEC-007 | Mandatory | The final deflection shall be the value produced by the measurement method; no deflection correction factor shall be applied to the result. | Calculation check/Test |
+| MGR-DEC-008 | Mandatory | An undetermined log orientation shall not affect the acceptance/rejection outcome; the orientation shall be recorded as "Unknown". | Rule review/Test |
+| MGR-DEC-009 | Mandatory | When the deflection calculation mode is "Both", the one-way and two-way results shall be reported separately. The larger of the two values shall be used as the final deflection for the acceptance/rejection decision. | Calculation check/Test |
 
-### 7.4 PLC entegrasyonu
+### 7.4 PLC integration
 
-| Kimlik | Öncelik | Gereksinim | Doğrulama |
+| ID | Priority | Requirement | Verification |
 |---|---|---|---|
-| MGR-PLC-001 | Zorunlu | Sistem; bekleme, çalışma, sonucu tutma ve devre dışı durumlarını PLC ile belirlenmiş sözleşmeye göre yönetmelidir. | Entegrasyon testi |
-| MGR-PLC-002 | Zorunlu | Ölçüm tamamlanmadan PLC'ye geçerli nihai sonuç sunulmamalıdır. | Entegrasyon testi |
-| MGR-PLC-003 | Zorunlu | Sistem sonuçları PLC onayı gelene kadar değiştirmeden tutmalıdır. | Entegrasyon testi |
-| MGR-PLC-004 | Zorunlu | PLC onayı alındıktan sonra sonuçlar temizlenmeli ve sistem yeni denetim için hazırlanmalıdır. | Entegrasyon testi |
-| MGR-PLC-005 | Zorunlu | PLC bağlantısı veya heartbeat kaybolduğunda “Hazır” durumu kaldırılmalı, hata gösterilmeli ve kontrollü yeniden bağlantı denenmelidir. | Hata senaryosu testi |
-| MGR-PLC-006 | Zorunlu | Mevcut PLC etiketleri, veri tipleri ve veri birimleri iki tarafça onaylanan bir arayüz değişikliği olmadan değiştirilmemelidir. Modbus bu entegrasyonun parçası değildir. | Arayüz incelemesi |
-| MGR-PLC-007 | Zorunlu | “Ölçüm Hatası” durumunda PLC `Outcome=true` almalıdır. Sistem, buna rağmen gerçek sonucu operatör ekranında ve kayıtlarda “Ölçüm Hatası” olarak korumalıdır. | Entegrasyon testi |
+| MGR-PLC-001 | Mandatory | The system shall manage idle, running, result-hold, and disabled states in accordance with the agreed PLC contract. | Integration test |
+| MGR-PLC-002 | Mandatory | A valid final result shall not be presented to the PLC before measurement is complete. | Integration test |
+| MGR-PLC-003 | Mandatory | The system shall hold results unchanged until PLC acknowledgement is received. | Integration test |
+| MGR-PLC-004 | Mandatory | After PLC acknowledgement is received, the results shall be cleared and the system shall prepare for a new inspection. | Integration test |
+| MGR-PLC-005 | Mandatory | If the PLC connection or heartbeat is lost, the "Ready" state shall be removed, an error shall be displayed, and controlled reconnection shall be attempted. | Failure-scenario test |
+| MGR-PLC-006 | Mandatory | Existing PLC tags, data types, and units shall not be changed without an interface change approved by both parties. Modbus is not part of this integration. | Interface review |
+| MGR-PLC-007 | Mandatory | In a "Measurement Failure" condition, the PLC shall receive `Outcome=true`. The system shall nevertheless preserve the actual outcome as "Measurement Failure" on the operator screen and in the records. | Integration test |
 
-### 7.5 Operatör arayüzü
+### 7.5 Operator interface
 
-| Kimlik | Öncelik | Gereksinim | Doğrulama |
+| ID | Priority | Requirement | Verification |
 |---|---|---|---|
-| MGR-UI-001 | Zorunlu | Ana ekran her kamera kanalının ve PLC bağlantısının durumunu göstermelidir. | Gösterim |
-| MGR-UI-002 | Zorunlu | Ana ekran son denetimin kimliğini, sonucunu, uzunluğunu, çaplarını, sehimini, izin verilen sehimi, yönünü ve flare bilgisini göstermelidir. | Gösterim |
-| MGR-UI-003 | Zorunlu | Kabul, ret ve ölçüm hatası yalnızca renkle değil, açık metinle de birbirinden ayrılmalıdır. | Gösterim |
-| MGR-UI-004 | Zorunlu | Toplam tetik, tamamlanan denetim, kabul, ret ve ölçüm hatası sayaçları ayrı gösterilmelidir. | Test |
-| MGR-UI-005 | Zorunlu | Üretim ve simülasyon sonuçları ile sayaçları birbirine karıştırılmamalıdır. | Test |
-| MGR-UI-006 | Zorunlu | Geçersiz ayarlar kaydedilmemeli; ilgili alan ve hata nedeni operatöre gösterilmelidir. | Test |
-| MGR-UI-007 | Zorunlu | Devam eden denetim, denetim başlangıcındaki ayarlarla tamamlanmalı; sonradan yapılan değişiklik bir sonraki denetimde uygulanmalıdır. | Test |
-| MGR-UI-008 | Önerilen | Yetkili kullanıcılar ham, işlenmiş ve ölçülmüş 3B veriyi teşhis amacıyla görüntüleyebilmelidir. | Gösterim |
-| MGR-UI-009 | Zorunlu | Operatör arayüzünde manuel denetim komutu bulunmalıdır. Komut yalnızca sistem yeni bir denetim başlatmaya hazırken etkin olmalı; manuel başlatılan denetim kayıtlarda açıkça işaretlenmeli ve aynı tomruk için PLC tetiklemesiyle ikinci bir denetim oluşturulmamalıdır. | Gösterim/Test |
+| MGR-UI-001 | Mandatory | The main screen shall show the status of each camera channel and the PLC connection. | Demonstration |
+| MGR-UI-002 | Mandatory | The main screen shall show the latest inspection's identifier, outcome, length, diameters, deflection, permitted deflection, orientation, and flare information. | Demonstration |
+| MGR-UI-003 | Mandatory | Acceptance, rejection, and measurement failure shall be distinguished by explicit text as well as by colour. | Demonstration |
+| MGR-UI-004 | Mandatory | Counters for total triggers, completed inspections, acceptances, rejections, and measurement failures shall be displayed separately. | Test |
+| MGR-UI-005 | Mandatory | Production and simulation results and counters shall not be mixed. | Test |
+| MGR-UI-006 | Mandatory | Invalid settings shall not be saved; the affected field and reason for the error shall be shown to the operator. | Test |
+| MGR-UI-007 | Mandatory | An inspection in progress shall be completed using the settings present at its start; subsequent changes shall apply to the next inspection. | Test |
+| MGR-UI-008 | Recommended | Authorised users should be able to view raw, processed, and measured 3D data for diagnostic purposes. | Demonstration |
+| MGR-UI-009 | Mandatory | The operator interface shall provide a manual inspection command. The command shall be enabled only when the system is ready to start a new inspection. A manually initiated inspection shall be clearly marked in the records, and a PLC trigger for the same log shall not create a second inspection. | Demonstration/Test |
 
-### 7.6 Simülasyon, kayıt ve raporlama
+### 7.6 Simulation, recording, and reporting
 
-| Kimlik | Öncelik | Gereksinim | Doğrulama |
+| ID | Priority | Requirement | Verification |
 |---|---|---|---|
-| MGR-DATA-001 | Zorunlu | Sistem, gerçek kameraya ihtiyaç duymadan kayıtlı 3B veri üzerinde aynı ölçüm ve karar sürecini çalıştırabilmelidir. | Test |
-| MGR-DATA-002 | Zorunlu | Tek veri seti ve bir klasördeki bütün veri setleri ayrı komutlarla çalıştırılabilmelidir. | Gösterim |
-| MGR-DATA-003 | Zorunlu | Toplu simülasyonda bozuk bir veri seti diğer veri setlerinin işlenmesini engellememelidir. | Test |
-| MGR-DATA-004 | Zorunlu | Toplu simülasyon özeti her veri seti için sonuç, ölçümler, süre ve hata nedenini içermelidir. | Çıktı incelemesi |
-| MGR-DATA-005 | Önerilen | Toplu simülasyon özeti CSV veya JSON biçiminde dışa aktarılabilmelidir. | Gösterim |
-| MGR-DATA-006 | Zorunlu | Her denetim için başlangıç/bitiş zamanı, kimlik, çalışma modu, sonuç, ölçümler, hata, süre ve yazılım/ayar sürümü kaydedilmelidir. | Kayıt incelemesi |
-| MGR-DATA-007 | Zorunlu | Ham verinin manuel, ret, ölçüm hatası veya teşhis amacıyla saklanması ayrı ayrı yapılandırılabilmelidir. | Test |
-| MGR-DATA-008 | Zorunlu | Kayıt hedefi geçici olarak erişilemez olduğunda ölçüm sonucu kaybolmamalı; operatöre depolama hatası bildirilmelidir. | Hata senaryosu testi |
-| MGR-DATA-009 | Zorunlu | Uygulamanın log veya ham verileri süreye bağlı olarak otomatik silmesi gerekmemektedir. Saklama, arşivleme, yedekleme, disk kotası ve silme işlemleri uygulama dışında IT/operasyon tarafından yönetilebilmelidir. | Tasarım incelemesi/Gösterim |
+| MGR-DATA-001 | Mandatory | The system shall be able to run the same measurement and decision process on recorded 3D data without requiring a physical camera. | Test |
+| MGR-DATA-002 | Mandatory | A single dataset and all datasets in a folder shall be executable through separate commands. | Demonstration |
+| MGR-DATA-003 | Mandatory | In batch simulation, a corrupt dataset shall not prevent other datasets from being processed. | Test |
+| MGR-DATA-004 | Mandatory | The batch-simulation summary shall include the outcome, measurements, duration, and error reason for each dataset. | Output review |
+| MGR-DATA-005 | Recommended | The batch-simulation summary should be exportable in CSV or JSON format. | Demonstration |
+| MGR-DATA-006 | Mandatory | For each inspection, the start/end time, identifier, operating mode, outcome, measurements, error, duration, and software/settings version shall be recorded. | Record review |
+| MGR-DATA-007 | Mandatory | Storage of raw data for manual inspections, rejections, measurement failures, or diagnostic purposes shall be independently configurable. | Test |
+| MGR-DATA-008 | Mandatory | If the recording destination is temporarily unavailable, the measurement result shall not be lost, and the operator shall be notified of the storage error. | Failure-scenario test |
+| MGR-DATA-009 | Mandatory | The application is not required to delete logs or raw data automatically based on age. Retention, archiving, backup, disk quotas, and deletion shall be manageable by IT/operations outside the application. | Design review/Demonstration |
 
-## 8. Fonksiyonel olmayan gereksinimler
+## 8. Non-functional requirements
 
-| Kimlik | Öncelik | Gereksinim | Doğrulama |
+| ID | Priority | Requirement | Verification |
 |---|---|---|---|
-| MGR-NFR-001 | Zorunlu | PLC tetiklemesinden sonucun hazır olmasına kadar geçen süre ölçülmeli ve kaydedilmelidir. | Kayıt incelemesi |
-| MGR-NFR-002 | Zorunlu | Sabit bir azami uçtan uca denetim süresi kabul koşulu değildir. İstenirse ayarlardan bir uyarı süresi tanımlanabilmeli veya süre denetimi devre dışı bırakılabilmelidir. Tanımlı süre aşılırsa olay kaydedilmeli ve operatöre uyarı verilmelidir; süre aşımı tek başına ürün sonucunu değiştirmemelidir. | Performans testi/Gösterim |
-| MGR-NFR-003 | Zorunlu | Kullanıcı arayüzü kamera çekimi, 3B işleme ve dosya yazımı sırasında yanıt verebilir kalmalıdır. | Performans testi |
-| MGR-NFR-004 | Zorunlu | Beklenmeyen bir hata sonraki denetimlerin sessizce durmasına yol açmamalı; durum ve hata nedeni görünür olmalıdır. | Dayanıklılık testi |
-| MGR-NFR-005 | Zorunlu | Kamera veya veri kalitesi nedeniyle ölçüm üretilemezse hata görünür ve izlenebilir olmalı; müşteri iş kuralı gereği hat akışı için `Outcome=true` gönderilirken iç sonuç “Ölçüm Hatası” olarak korunmalıdır. | Hata senaryosu testi |
-| MGR-NFR-006 | Zorunlu | Uzun süreli çalışmada bellek ve cihaz kaynaklarının kontrolsüz büyümediği dayanıklılık testiyle gösterilmelidir. | Uzun süreli test |
-| MGR-NFR-007 | Zorunlu | Bütün fiziksel uzunluk ve çap sonuçlarında temel birim milimetre olmalıdır. | İnceleme/Test |
-| MGR-NFR-008 | Zorunlu | Her yazılım teslimatı benzersiz uygulama ve ölçüm algoritması sürümüne sahip olmalıdır. | Sürüm incelemesi |
-| MGR-NFR-009 | Önerilen | Kritik kalibrasyon ve karar ayarları yetkisiz değişikliğe karşı korunmalı, değişiklikler denetlenebilir olmalıdır. | Güvenlik incelemesi |
-| MGR-NFR-010 | Zorunlu | PLC, kamera, kayıt yolu ve ayarlar kaynak kod değiştirilmeden yapılandırılabilmelidir. | Gösterim |
+| MGR-NFR-001 | Mandatory | The elapsed time from the PLC trigger until the result is ready shall be measured and recorded. | Record review |
+| MGR-NFR-002 | Mandatory | A fixed maximum end-to-end inspection time is not an acceptance condition. If required, a warning threshold shall be configurable, or timing supervision shall be capable of being disabled. If the configured threshold is exceeded, the event shall be recorded and a warning shown to the operator; exceeding the threshold alone shall not change the product outcome. | Performance test/Demonstration |
+| MGR-NFR-003 | Mandatory | The user interface shall remain responsive during camera acquisition, 3D processing, and file writing. | Performance test |
+| MGR-NFR-004 | Mandatory | An unexpected error shall not cause subsequent inspections to stop silently; the system state and error reason shall be visible. | Resilience test |
+| MGR-NFR-005 | Mandatory | If a measurement cannot be produced because of camera or data quality, the error shall be visible and traceable. In accordance with the customer business rule, the internal outcome shall remain "Measurement Failure" while `Outcome=true` is sent for line flow. | Failure-scenario test |
+| MGR-NFR-006 | Mandatory | An endurance test shall demonstrate that memory and device-resource usage do not grow without control during prolonged operation. | Endurance test |
+| MGR-NFR-007 | Mandatory | Millimetres shall be the base unit for all physical length and diameter results. | Inspection/Test |
+| MGR-NFR-008 | Mandatory | Every software delivery shall have unique application and measurement-algorithm versions. | Version review |
+| MGR-NFR-009 | Recommended | Critical calibration and decision settings should be protected against unauthorised changes, and changes should be auditable. | Security review |
+| MGR-NFR-010 | Mandatory | PLC, camera, recording-path, and other settings shall be configurable without modifying the source code. | Demonstration |
 
-## 9. Asgari müşteri kabul senaryoları
+## 9. Minimum customer acceptance scenarios
 
-| Kimlik | Senaryo | Beklenen sonuç |
+| ID | Scenario | Expected result |
 |---|---|---|
-| MKA-001 | Sistem hazırken geçerli ve sınır içindeki bir tomruk denetlenir. | Bir denetim oluşur; ölçümler yayınlanır; sonuç “Kabul” olur ve PLC onayına kadar tutulur. |
-| MKA-002 | Geçerli ölçümde sehim izin verilen sınırı aşar. | Sonuç “Ret” olur; ölçülen ve izin verilen değerler kaydedilir. |
-| MKA-003 | Etkin kameralardan biri zaman aşımına uğrar veya boş veri verir. | İç sonuç “Ölçüm Hatası” olur, kamera hatası kaydedilir ve PLC'ye `Outcome=true` gönderilir. |
-| MKA-004 | Tanımlı sektörlerden en az birinde hiç geçerli veri bulunmaz. | Fiziksel ölçüm yerine özel/sihirli sayı kullanılmaz; iç sonuç “Ölçüm Hatası” olur ve PLC'ye `Outcome=true` gönderilir. Her sektörde en az bir geçerli veri bulunduğunda bu kapsam koşulu sağlanmış sayılır. |
-| MKA-005 | PLC sonucu onaylar. | Sonuç alanları temizlenir ve sistem yeni denetim için “Hazır” durumuna döner. |
-| MKA-006 | PLC tetik sinyali yüksek kalır. | Aynı tomruk için ikinci denetim başlamaz. |
-| MKA-007 | Sehim, onaylı sınıra tam eşittir. | Sonuç “Kabul” olur. |
-| MKA-008 | Geçersiz bir ayar kaydedilmeye çalışılır. | Kayıt reddedilir ve açıklayıcı alan hatası gösterilir. |
-| MKA-009 | On veri setinden biri bozukken toplu simülasyon çalıştırılır. | Bozuk veri hata olarak raporlanır; diğer dokuz veri işlenir ve özet on kayıt içerir. |
-| MKA-010 | Çalışan denetim sırasında karar ayarı değiştirilir. | Mevcut denetim eski ayarla, sonraki denetim yeni ayarla tamamlanır. |
-| MKA-011 | Aynı referans obje/veri, aynı koşullar ve aynı ayarlarla tekrarlı olarak işlenir. | Ekran, kayıt ve PLC değerleri aynı birimdedir; uzunluk, çap ve sehim sonuçlarının her biri için elde edilen en büyük ve en küçük değer arasındaki fark 10 mm'yi aşmaz. |
-| MKA-012 | Uygulama beklenmeyen kapanma sonrasında yeniden açılır. | Eski sonuç yeni sonuç gibi yayınlanmaz; PLC ile güvenli başlangıç durumu kurulur. |
-| MKA-013 | Test yapılandırmasında kameralardan biri veya ikisi devre dışı bırakılır. | Sistem yalnızca etkin kameraları bekler, devre dışı kameraları açıkça gösterir ve test denetimini etkin kamera verileriyle çalıştırır. |
-| MKA-014 | Geçerli ölçümde flare bulunur ve sehim sınır içindedir. | Flare kaydedilir; tek başına ret oluşturmaz ve sonuç “Kabul” olur. |
-| MKA-015 | Yön belirlenemez ve diğer ölçümler geçerlidir. | Yön “Bilinmiyor” kaydedilir; yön belirsizliği kabul/ret sonucunu değiştirmez. |
-| MKA-016 | Sehim hesap modu sırasıyla “Tek yönlü”, “İki yönlü” ve “Her ikisi” seçilerek bilinen sehimli referans veri işlenir. | Seçilen moda ait değerler ayrı ve doğru etiketlerle raporlanır; “Her ikisi” modunda büyük değer nihai sehim olarak kullanılır ve hiçbir sonuca düzeltme katsayısı uygulanmaz. |
-| MKA-017 | Denetim süresi uyarısı etkin ve tanımlı süre aşılır. | Süre aşımı kaydedilir ve operatöre uyarı verilir; ürün sonucu yalnızca ölçüm ve karar kurallarına göre belirlenir. Süre denetimi kapatıldığında süre uyarısı oluşmaz. |
-| MKA-018 | Saklanan log ve ham verilerin harici IT/operasyon politikasıyla arşivlenmesi veya silinmesi gerekir. | Uygulama süreye bağlı otomatik silme yapmaz; veriler uygulama dışında yönetilebilir. |
-| MKA-019 | Sistem yeni denetim için hazırken operatör manuel denetim komutunu verir. | Yalnızca bir denetim başlar, kaynak türü “Manuel” olarak kaydedilir ve aynı tomruk için eşzamanlı PLC tetiklemesi ikinci bir denetim başlatmaz. |
+| MKA-001 | A valid log within limits is inspected while the system is ready. | One inspection is created; measurements are published; the outcome is "Accepted" and is held until PLC acknowledgement. |
+| MKA-002 | The deflection exceeds the permitted limit in a valid measurement. | The outcome is "Rejected"; the measured and permitted values are recorded. |
+| MKA-003 | One of the enabled cameras times out or returns empty data. | The internal outcome is "Measurement Failure", the camera error is recorded, and `Outcome=true` is sent to the PLC. |
+| MKA-004 | At least one defined sector contains no valid data. | No special or magic number is used in place of a physical measurement; the internal outcome is "Measurement Failure", and `Outcome=true` is sent to the PLC. The coverage condition is satisfied when every sector contains at least one valid data point. |
+| MKA-005 | The PLC acknowledges the result. | The result fields are cleared and the system returns to the "Ready" state for a new inspection. |
+| MKA-006 | The PLC trigger signal remains high. | A second inspection does not start for the same log. |
+| MKA-007 | The deflection is exactly equal to the approved limit. | The outcome is "Accepted". |
+| MKA-008 | An attempt is made to save an invalid setting. | The save is rejected and an explanatory field error is displayed. |
+| MKA-009 | A batch simulation is run with one corrupt dataset among ten datasets. | The corrupt dataset is reported as an error; the other nine datasets are processed, and the summary contains ten records. |
+| MKA-010 | A decision setting is changed during an active inspection. | The current inspection is completed using the old setting, and the next inspection uses the new setting. |
+| MKA-011 | The same reference object/data is processed repeatedly under the same conditions and with the same settings. | Screen, record, and PLC values use the same units; for each of length, diameter, and deflection, the difference between the maximum and minimum obtained values does not exceed 10 mm. |
+| MKA-012 | The application restarts after an unexpected shutdown. | An old result is not published as though it were new, and a safe initial state is established with the PLC. |
+| MKA-013 | One or two cameras are disabled in the test configuration. | The system waits only for enabled cameras, clearly identifies disabled cameras, and runs the test inspection using data from the enabled cameras. |
+| MKA-014 | Flare is detected in a valid measurement and the deflection is within limits. | The flare is recorded; it does not cause rejection by itself, and the outcome is "Accepted". |
+| MKA-015 | Orientation cannot be determined and all other measurements are valid. | The orientation is recorded as "Unknown"; orientation uncertainty does not change the acceptance/rejection outcome. |
+| MKA-016 | Reference data with a known deflection is processed with the deflection calculation mode set in turn to "One-way", "Two-way", and "Both". | Values for the selected mode are reported separately with correct labels; in "Both" mode, the larger value is used as the final deflection, and no correction factor is applied to any result. |
+| MKA-017 | The inspection-duration warning is enabled and the configured threshold is exceeded. | The overrun is recorded and a warning is shown to the operator; the product outcome is determined solely by the measurement and decision rules. No timing warning is generated when timing supervision is disabled. |
+| MKA-018 | Stored logs and raw data must be archived or deleted under an external IT/operations policy. | The application does not perform automatic age-based deletion; the data can be managed outside the application. |
+| MKA-019 | The operator issues the manual-inspection command while the system is ready for a new inspection. | Exactly one inspection starts, the source type is recorded as "Manual", and a concurrent PLC trigger for the same log does not start a second inspection. |
 
-Nihai fabrika kabul testi (FAT) ve saha kabul testi (SAT) prosedürleri, bu senaryolar ile onaylanan sayısal hedeflerden türetilecektir.
+The final factory acceptance test (FAT) and site acceptance test (SAT) procedures shall be derived from these scenarios and the approved quantitative targets.
 
-## 10. Teslimatlar
+## 10. Deliverables
 
-Asgari teslimat kapsamı aşağıdakileri içerir:
+The minimum delivery scope includes:
 
-- Çalıştırılabilir Balcas denetim uygulaması ve sürüm bilgisi
-- Onaylı varsayılan yapılandırma ve ayar açıklamaları
-- PLC arayüz/veri sözleşmesi
-- Operatör kullanım talimatı
-- Kurulum, yedekleme ve geri yükleme talimatı
-- Hata kodları ve sorun giderme listesi
-- FAT/SAT test prosedürü ve test sonuçları
-- Onaylı referans veri setleri ve regresyon test özeti
-- Sürüm notları ve bilinen kısıtlar
+- Executable Balcas inspection application and version information
+- Approved default configuration and setting descriptions
+- PLC interface/data contract
+- Operator instructions
+- Installation, backup, and restore instructions
+- Error-code and troubleshooting list
+- FAT/SAT test procedures and test results
+- Approved reference datasets and regression-test summary
+- Release notes and known limitations
 
-## 11. Müşteri girdileri ve sorumlulukları
+## 11. Customer inputs and responsibilities
 
-Müşteri veya müşterinin yetkilendirdiği taraf aşağıdaki girdileri sağlamalı ve onaylamalıdır:
+The customer or a party authorised by the customer shall provide and approve the following inputs:
 
-- İsteğe bağlı denetim süresi uyarısının kullanılacağı durumlarda uyarı süresi
-- Ölçüm aralıkları ve 10 mm tekrarlanabilirlik parametresinin doğrulanacağı referanslar
-- Metre başına izin verilen azami sehim
-- Üç kameranın yerleşimi, görüş alanı ve kalibrasyon referansları
-- PLC protokolü, etiket listesi ve veri tipleri
-- Kabul/ret iş kuralları ve hata halinde hat davranışı
-- Referans tomruklar/veri setleri ile beklenen sonuçlar
-- Ham veri ve loglar için uygulama dışında yürütülecek disk kotası, arşivleme, yedekleme ve silme politikası
-- Üretim ağ erişimi, kullanıcı yetkileri ve siber güvenlik kuralları
-- FAT ve SAT ortamı, test zamanı ve kabul yetkilileri
+- Warning threshold where the optional inspection-duration warning is used
+- Measurement ranges and references against which the 10 mm repeatability parameter will be verified
+- Maximum permitted deflection per metre
+- Placement, field of view, and calibration references for the three cameras
+- PLC protocol, tag list, and data types
+- Acceptance/rejection business rules and line behaviour in the event of failure
+- Reference logs/datasets and expected results
+- Disk quota, archiving, backup, and deletion policy for raw data and logs, to be operated outside the application
+- Production-network access, user permissions, and cybersecurity rules
+- FAT and SAT environments, test time, and acceptance authorities
 
-Bu girdiler sağlanmadan ilgili gereksinimin nihai doğrulaması yapılamaz.
+The affected requirements cannot receive final verification until these inputs have been provided.
 
 
-## 13. İzlenebilirlik ve değişiklik yönetimi
+## 13. Traceability and change management
 
-Her müşteri gereksinimi benzersiz `MGR-*` kimliğiyle takip edilir. Sistem gereksinimleri, tasarım maddeleri ve kabul testleri ilgili müşteri gereksinimi kimliğine referans vermelidir.
+Each customer requirement is tracked by a unique `MGR-*` identifier. System requirements, design items, and acceptance tests shall reference the relevant customer-requirement identifier.
 
-Onaydan sonra yapılacak kapsam, iş kuralı, arayüz veya kabul ölçütü değişiklikleri yazılı değişiklik talebiyle yönetilir. Değişiklik talebi en az etkilenen gereksinimleri, maliyet/takvim etkisini, doğrulama ihtiyacını ve onaylayan tarafları içermelidir.
+After approval, changes to scope, business rules, interfaces, or acceptance criteria shall be managed through a written change request. At a minimum, the change request shall identify the affected requirements, cost/schedule impact, verification needs, and approving parties.
 
-## 14. Varsayımlar ve bağımlılıklar
+## 14. Assumptions and dependencies
 
-- Tomruk, kamera görüş alanına mekanik olarak uygun ve ölçüm sırasında yeterince kararlı biçimde sunulur.
-- Kamera, PLC, ağ ve bilgisayar donanımı üretim koşullarına uygun ve çalışır durumdadır.
-- Kalibrasyonun yapılması ve periyodik doğrulanması için uygun fiziksel referanslar sağlanır.
-- PLC arayüzü ve hat sıralaması otomasyon ekibiyle birlikte test edilebilir.
-- Ölçüm algoritmasının kabulü için müşteri tarafından doğrulanmış örnekler sağlanır.
-- Ortam ışığı, titreşim, kirlenme, sıcaklık ve ağ yükü gibi saha koşulları üzerinde mutabık kalınan çalışma aralığında tutulur.
+- The log is presented in a mechanically suitable position within the camera field of view and remains sufficiently stable during measurement.
+- The camera, PLC, network, and computer hardware are suitable for production conditions and are operational.
+- Suitable physical references are provided for calibration and its periodic verification.
+- The PLC interface and line sequence can be tested jointly with the automation team.
+- Customer-verified samples are provided for acceptance of the measurement algorithm.
+- Site conditions such as ambient light, vibration, contamination, temperature, and network load are maintained within the agreed operating range.
 
-## Ek A — Revizyon geçmişi
-
+## Appendix A — Revision history
