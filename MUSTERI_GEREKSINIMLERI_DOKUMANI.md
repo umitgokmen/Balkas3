@@ -4,7 +4,7 @@
 |---|---|
 | Belge kodu | BLC-MGD-001 |
 | Belge türü | Müşteri Gereksinimleri Dokümanı (MGD / URS) |
-| Sürüm | 0.2 |
+| Sürüm | 0.3 |
 | Durum | Müşteri inceleme taslağı |
 | Tarih | 28.09.2026 |
 | Hazırlayan |  |
@@ -110,11 +110,11 @@ Bir gereksinimin karşılandığı; test, inceleme, gösterim veya ölçüm yön
 | MGR-INS-005 | Zorunlu | Sistem minimum, medyan ve maksimum gövde çaplarını milimetre cinsinden ölçmelidir. | Referans obje testi |
 | MGR-INS-006 | Zorunlu | Sistem tomruğun yönünü “dip önde”, “dip arkada” veya “bilinmiyor” olarak bildirmelidir. | Etiketli veri testi |
 | MGR-INS-007 | Zorunlu | Sistem flare bulunup bulunmadığını ayrı bir sonuç olarak bildirmelidir. | Etiketli veri testi |
-| MGR-INS-008 | Zorunlu | Sistem tomruk sehimini 360° çevresinde değerlendirerek nihai sehimi, ilgili açıyı ve konumu bildirmelidir. | Referans veri testi |
+| MGR-INS-008 | Zorunlu | Sistem tomruk sehimini 360° çevresinde değerlendirmeli; ayarlardan “Tek yönlü”, “İki yönlü” veya “Her ikisi” hesap modu seçilebilmelidir. Seçilen moda ait sehim değeri/değerleri, ilgili açı ve konumla birlikte bildirilmelidir. | Referans veri testi/Gösterim |
 | MGR-INS-009 | Zorunlu | Flare bölgesi ve güvenilir olmadığı belirlenen ölçüm parçaları normal gövde çapı ve sehim hesabını bozmamalıdır. | Referans veri testi |
-| MGR-INS-010 | Zorunlu | Ölçüm için gereken veri kapsamı sağlanmıyorsa sistem sayısal bir ölçüm uydurmamalı ve sonucu “Ölçüm Hatası” olarak vermelidir. | Hata senaryosu testi |
-| MGR-INS-011 | Zorunlu | Aynı kayıtlı veri, aynı algoritma sürümü ve aynı ayarlarla işlendiğinde tanımlı tolerans içinde aynı sonucu vermelidir. | Regresyon testi |
-| MGR-INS-012 | Zorunlu | Sehim ölçümü ve ürün kararı için yalnızca tek, onaylı ölçüm yöntemi kullanılmalıdır; ikincil veya yedek karar yöntemi bulunmamalıdır. | Tasarım incelemesi/Test |
+| MGR-INS-010 | Zorunlu | Ölçümün geçerli sayılması için tanımlı sektörlerin her birinde en az bir geçerli veri bulunmalıdır. Herhangi bir sektörde hiç geçerli veri yoksa sistem sayısal bir ölçüm uydurmamalı ve sonucu “Ölçüm Hatası” olarak vermelidir. | Hata senaryosu testi |
+| MGR-INS-011 | Zorunlu | Uzunluk, çap ve sehim ölçümlerinin doğrulanmış referans değere göre mutlak hatası en fazla 10 mm olmalıdır. Ayrı bir tekrarlanabilirlik kabul toleransı aranmayacaktır. | Referans obje/veri testi |
+| MGR-INS-012 | Zorunlu | Sehim ölçümü ve ürün kararı, denetim başlangıcında seçili olan onaylı hesap moduyla tamamlanmalıdır; ölçüm sırasında otomatik olarak başka bir moda geçilmemelidir. | Tasarım incelemesi/Test |
 
 ### 7.3 Karar kuralları
 
@@ -128,6 +128,7 @@ Bir gereksinimin karşılandığı; test, inceleme, gösterim veya ölçüm yön
 | MGR-DEC-006 | Zorunlu | Flare bulunması tek başına ret nedeni olmamalıdır. | Kural incelemesi/Test |
 | MGR-DEC-007 | Zorunlu | Nihai sehim, ölçüm yönteminin ürettiği değer olmalı; sonuca herhangi bir sehim düzeltme katsayısı uygulanmamalıdır. | Hesap kontrolü/Test |
 | MGR-DEC-008 | Zorunlu | Tomruk yönünün belirlenememesi kabul/ret sonucunu etkilememeli; yön “Bilinmiyor” olarak kaydedilmelidir. | Kural incelemesi/Test |
+| MGR-DEC-009 | Zorunlu | Sehim hesap modu “Her ikisi” seçildiğinde tek yönlü ve iki yönlü sonuçlar ayrı ayrı raporlanmalı; kabul/ret kararında bu iki değerden büyük olan nihai sehim olarak kullanılmalıdır. | Hesap kontrolü/Test |
 
 ### 7.4 PLC entegrasyonu
 
@@ -153,6 +154,7 @@ Bir gereksinimin karşılandığı; test, inceleme, gösterim veya ölçüm yön
 | MGR-UI-006 | Zorunlu | Geçersiz ayarlar kaydedilmemeli; ilgili alan ve hata nedeni operatöre gösterilmelidir. | Test |
 | MGR-UI-007 | Zorunlu | Devam eden denetim, denetim başlangıcındaki ayarlarla tamamlanmalı; sonradan yapılan değişiklik bir sonraki denetimde uygulanmalıdır. | Test |
 | MGR-UI-008 | Önerilen | Yetkili kullanıcılar ham, işlenmiş ve ölçülmüş 3B veriyi teşhis amacıyla görüntüleyebilmelidir. | Gösterim |
+| MGR-UI-009 | Zorunlu | Operatör arayüzünde manuel denetim komutu bulunmalıdır. Komut yalnızca sistem yeni bir denetim başlatmaya hazırken etkin olmalı; manuel başlatılan denetim kayıtlarda açıkça işaretlenmeli ve aynı tomruk için PLC tetiklemesiyle ikinci bir denetim oluşturulmamalıdır. | Gösterim/Test |
 
 ### 7.6 Simülasyon, kayıt ve raporlama
 
@@ -166,13 +168,14 @@ Bir gereksinimin karşılandığı; test, inceleme, gösterim veya ölçüm yön
 | MGR-DATA-006 | Zorunlu | Her denetim için başlangıç/bitiş zamanı, kimlik, çalışma modu, sonuç, ölçümler, hata, süre ve yazılım/ayar sürümü kaydedilmelidir. | Kayıt incelemesi |
 | MGR-DATA-007 | Zorunlu | Ham verinin manuel, ret, ölçüm hatası veya teşhis amacıyla saklanması ayrı ayrı yapılandırılabilmelidir. | Test |
 | MGR-DATA-008 | Zorunlu | Kayıt hedefi geçici olarak erişilemez olduğunda ölçüm sonucu kaybolmamalı; operatöre depolama hatası bildirilmelidir. | Hata senaryosu testi |
+| MGR-DATA-009 | Zorunlu | Uygulamanın log veya ham verileri süreye bağlı olarak otomatik silmesi gerekmemektedir. Saklama, arşivleme, yedekleme, disk kotası ve silme işlemleri uygulama dışında IT/operasyon tarafından yönetilebilmelidir. | Tasarım incelemesi/Gösterim |
 
 ## 8. Fonksiyonel olmayan gereksinimler
 
 | Kimlik | Öncelik | Gereksinim | Doğrulama |
 |---|---|---|---|
 | MGR-NFR-001 | Zorunlu | PLC tetiklemesinden sonucun hazır olmasına kadar geçen süre ölçülmeli ve kaydedilmelidir. | Kayıt incelemesi |
-| MGR-NFR-002 | Karar bekliyor | Uçtan uca azami denetim süresi müşteri tarafından hat çevrim süresine göre belirlenecektir. | Performans testi |
+| MGR-NFR-002 | Zorunlu | Sabit bir azami uçtan uca denetim süresi kabul koşulu değildir. İstenirse ayarlardan bir uyarı süresi tanımlanabilmeli veya süre denetimi devre dışı bırakılabilmelidir. Tanımlı süre aşılırsa olay kaydedilmeli ve operatöre uyarı verilmelidir; süre aşımı tek başına ürün sonucunu değiştirmemelidir. | Performans testi/Gösterim |
 | MGR-NFR-003 | Zorunlu | Kullanıcı arayüzü kamera çekimi, 3B işleme ve dosya yazımı sırasında yanıt verebilir kalmalıdır. | Performans testi |
 | MGR-NFR-004 | Zorunlu | Beklenmeyen bir hata sonraki denetimlerin sessizce durmasına yol açmamalı; durum ve hata nedeni görünür olmalıdır. | Dayanıklılık testi |
 | MGR-NFR-005 | Zorunlu | Kamera veya veri kalitesi nedeniyle ölçüm üretilemezse hata görünür ve izlenebilir olmalı; müşteri iş kuralı gereği hat akışı için `Outcome=true` gönderilirken iç sonuç “Ölçüm Hatası” olarak korunmalıdır. | Hata senaryosu testi |
@@ -189,19 +192,22 @@ Bir gereksinimin karşılandığı; test, inceleme, gösterim veya ölçüm yön
 | MKA-001 | Sistem hazırken geçerli ve sınır içindeki bir tomruk denetlenir. | Bir denetim oluşur; ölçümler yayınlanır; sonuç “Kabul” olur ve PLC onayına kadar tutulur. |
 | MKA-002 | Geçerli ölçümde sehim izin verilen sınırı aşar. | Sonuç “Ret” olur; ölçülen ve izin verilen değerler kaydedilir. |
 | MKA-003 | Etkin kameralardan biri zaman aşımına uğrar veya boş veri verir. | İç sonuç “Ölçüm Hatası” olur, kamera hatası kaydedilir ve PLC'ye `Outcome=true` gönderilir. |
-| MKA-004 | Ölçüm için gerekli veri kapsamı oluşmaz. | Fiziksel ölçüm yerine özel/sihirli sayı kullanılmaz; iç sonuç “Ölçüm Hatası” olur ve PLC'ye `Outcome=true` gönderilir. |
+| MKA-004 | Tanımlı sektörlerden en az birinde hiç geçerli veri bulunmaz. | Fiziksel ölçüm yerine özel/sihirli sayı kullanılmaz; iç sonuç “Ölçüm Hatası” olur ve PLC'ye `Outcome=true` gönderilir. Her sektörde en az bir geçerli veri bulunduğunda bu kapsam koşulu sağlanmış sayılır. |
 | MKA-005 | PLC sonucu onaylar. | Sonuç alanları temizlenir ve sistem yeni denetim için “Hazır” durumuna döner. |
 | MKA-006 | PLC tetik sinyali yüksek kalır. | Aynı tomruk için ikinci denetim başlamaz. |
 | MKA-007 | Sehim, onaylı sınıra tam eşittir. | Sonuç “Kabul” olur. |
 | MKA-008 | Geçersiz bir ayar kaydedilmeye çalışılır. | Kayıt reddedilir ve açıklayıcı alan hatası gösterilir. |
 | MKA-009 | On veri setinden biri bozukken toplu simülasyon çalıştırılır. | Bozuk veri hata olarak raporlanır; diğer dokuz veri işlenir ve özet on kayıt içerir. |
 | MKA-010 | Çalışan denetim sırasında karar ayarı değiştirilir. | Mevcut denetim eski ayarla, sonraki denetim yeni ayarla tamamlanır. |
-| MKA-011 | Bilinen ölçülü referans obje işlenir. | Ekran, kayıt ve PLC değerleri aynı birimde ve onaylı tolerans içindedir. |
+| MKA-011 | Bilinen ölçülü referans obje/veri işlenir. | Ekran, kayıt ve PLC değerleri aynı birimdedir; uzunluk, çap ve sehim sonuçlarının referans değere göre mutlak hatası 10 mm'yi aşmaz. Ayrı bir tekrarlanabilirlik toleransı aranmaz. |
 | MKA-012 | Uygulama beklenmeyen kapanma sonrasında yeniden açılır. | Eski sonuç yeni sonuç gibi yayınlanmaz; PLC ile güvenli başlangıç durumu kurulur. |
 | MKA-013 | Test yapılandırmasında kameralardan biri veya ikisi devre dışı bırakılır. | Sistem yalnızca etkin kameraları bekler, devre dışı kameraları açıkça gösterir ve test denetimini etkin kamera verileriyle çalıştırır. |
 | MKA-014 | Geçerli ölçümde flare bulunur ve sehim sınır içindedir. | Flare kaydedilir; tek başına ret oluşturmaz ve sonuç “Kabul” olur. |
 | MKA-015 | Yön belirlenemez ve diğer ölçümler geçerlidir. | Yön “Bilinmiyor” kaydedilir; yön belirsizliği kabul/ret sonucunu değiştirmez. |
-| MKA-016 | Bilinen sehimli referans veri işlenir. | Nihai sehim tek ölçüm yöntemiyle hesaplanır ve herhangi bir düzeltme katsayısı uygulanmadan raporlanır. |
+| MKA-016 | Sehim hesap modu sırasıyla “Tek yönlü”, “İki yönlü” ve “Her ikisi” seçilerek bilinen sehimli referans veri işlenir. | Seçilen moda ait değerler ayrı ve doğru etiketlerle raporlanır; “Her ikisi” modunda büyük değer nihai sehim olarak kullanılır ve hiçbir sonuca düzeltme katsayısı uygulanmaz. |
+| MKA-017 | Denetim süresi uyarısı etkin ve tanımlı süre aşılır. | Süre aşımı kaydedilir ve operatöre uyarı verilir; ürün sonucu yalnızca ölçüm ve karar kurallarına göre belirlenir. Süre denetimi kapatıldığında süre uyarısı oluşmaz. |
+| MKA-018 | Saklanan log ve ham verilerin harici IT/operasyon politikasıyla arşivlenmesi veya silinmesi gerekir. | Uygulama süreye bağlı otomatik silme yapmaz; veriler uygulama dışında yönetilebilir. |
+| MKA-019 | Sistem yeni denetim için hazırken operatör manuel denetim komutunu verir. | Yalnızca bir denetim başlar, kaynak türü “Manuel” olarak kaydedilir ve aynı tomruk için eşzamanlı PLC tetiklemesi ikinci bir denetim başlatmaz. |
 
 Nihai fabrika kabul testi (FAT) ve saha kabul testi (SAT) prosedürleri, bu senaryolar ile onaylanan sayısal hedeflerden türetilecektir.
 
@@ -223,14 +229,14 @@ Asgari teslimat kapsamı aşağıdakileri içerir:
 
 Müşteri veya müşterinin yetkilendirdiği taraf aşağıdaki girdileri sağlamalı ve onaylamalıdır:
 
-- Üretim hattı çevrim süresi ve azami sonuç süresi
-- Ölçüm aralıkları, doğruluk ve tekrarlanabilirlik toleransları
+- İsteğe bağlı denetim süresi uyarısının kullanılacağı durumlarda uyarı süresi
+- Ölçüm aralıkları ve 10 mm doğruluk ölçütünün doğrulanacağı referanslar
 - Metre başına izin verilen azami sehim
 - Üç kameranın yerleşimi, görüş alanı ve kalibrasyon referansları
 - PLC protokolü, etiket listesi ve veri tipleri
 - Kabul/ret iş kuralları ve hata halinde hat davranışı
 - Referans tomruklar/veri setleri ile beklenen sonuçlar
-- Ham veri ve log saklama süresi, disk kotası, arşivleme ve yedekleme politikası
+- Ham veri ve loglar için uygulama dışında yürütülecek disk kotası, arşivleme, yedekleme ve silme politikası
 - Üretim ağ erişimi, kullanıcı yetkileri ve siber güvenlik kuralları
 - FAT ve SAT ortamı, test zamanı ve kabul yetkilileri
 
@@ -242,12 +248,8 @@ Bu girdiler sağlanmadan ilgili gereksinimin nihai doğrulaması yapılamaz.
 
 | Kimlik | Konu | Karar | Durum / tarih |
 |---|---|---|---|
-| MK-004 | Sehim hesabında tek yönlü veya iki yönlü sapma | En büyük iki yönlü mutlak sapma | Açık |
-| MK-007 | Ölçüm geçerliliği için gereken asgari veri/dilim kapsamı | Referans veriyle belirlenmeli | Açık |
-| MK-008 | Azami uçtan uca denetim süresi | Hat çevrim süresinden türetilmeli | Açık |
-| MK-011 | Log ve ham veriler ne kadar süre saklanacaktır? | IT/operasyon belirlemeli | Açık |
-| MK-012 | Ölçüm doğruluğu ve tekrarlanabilirlik toleransları nedir? | Referans obje ve saha testiyle belirlenmeli | Açık |
-| MK-013 | Üretimde manuel denetim komutuna izin verilecek mi? | Proses güvenlik incelemesiyle belirlenmeli | Açık |
+MK-012 | Ölçüm doğruluğu ve tekrarlanabilirlik toleransları nedir? | Ölçümlerde azami mutlak hata 10 mm'dir; ayrı bir tekrarlanabilirlik kabul toleransı aranmaz. | Onaylandı / 28.09.2026 |
+
 
 ## 13. İzlenebilirlik ve değişiklik yönetimi
 
@@ -268,5 +270,6 @@ Onaydan sonra yapılacak kapsam, iş kuralı, arayüz veya kabul ölçütü değ
 
 | Sürüm | Tarih | Değişiklik | Hazırlayan |
 |---|---|---|---|
+| 0.3 | 28.09.2026 | MK-004, MK-007, MK-008, MK-011, MK-012 ve MK-013 kararları onaylanarak ilgili gereksinim ve kabul senaryolarına işlendi |  |
 | 0.2 | 28.09.2026 | PLC sonuç politikası, tek ölçüm yöntemi, kamera kullanımı, sehim, flare ve yön kararları güncellendi; Modbus kapsamdan çıkarıldı |  |
 | 0.1 | 28.09.2026 | İlk müşteri inceleme taslağı |  |
