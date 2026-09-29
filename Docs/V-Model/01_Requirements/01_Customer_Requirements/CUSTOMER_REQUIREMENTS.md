@@ -2,16 +2,13 @@
 
 | Document field | Value |
 |---|---|
-| Document code | BLC-MGD-001 |
+| Document code | BLC-CRD-001 |
 | Document type | Customer Requirements Document (CRD / URS) |
 | Version | 0.4 |
-| Status | Draft for customer review |
+
 | Date | 28 September 2026 |
-| Prepared by |  |
+
 | Customer | Balcas |
-
-
-## 1. Purpose
 
 ## 2. Business need and objectives
 
@@ -28,8 +25,6 @@ The system's business objectives are:
 - Support testing and repeat analysis independently of the production line by using recorded data.
 
 ## 3. Scope
-
-### 3.1 In scope
 
 - Acquiring data from three independent 3D camera channels
 - Combining camera data in a common coordinate system
@@ -97,9 +92,9 @@ Compliance with a requirement shall be demonstrated by the applicable method of 
 | CR-INS-005 | Mandatory | The system shall measure the minimum, median, and maximum stem diameters in millimetres. | Reference-object test |
 | CR-INS-006 | Mandatory | The system shall report the log orientation as "butt end leading", "butt end trailing", or "unknown". | Labelled-data test |
 | CR-INS-007 | Mandatory | The system shall report the presence or absence of flare as a separate result. | Labelled-data test |
-| CR-INS-008 | Mandatory | The system shall evaluate log deflection around 360 degrees. The calculation mode shall be selectable in the settings as "One-way", "Two-way", or "Both". The deflection value or values for the selected mode shall be reported together with the relevant angle and position. | Reference-data test/Demonstration |
+| CR-INS-008 | Mandatory | The system shall evaluate log deflection around 360 degrees and report the maximum deflection together with the relevant angle and position. | Reference-data test/Demonstration |
 | CR-INS-009 | Mandatory | The flare region and measurement segments determined to be unreliable shall not distort the normal stem-diameter or deflection calculation. | Reference-data test |
-| CR-INS-010 | Mandatory | A measurement shall be considered valid only when it passes every enabled data-quality filter. The filters shall include at least a configurable minimum valid-point count for each defined sector, detection of sudden diameter changes beyond a configured threshold, and detection of excessive angular differences between the orientations of fitted cylinders. The final filter set and thresholds shall be documented during development and used consistently in production and simulation. If any required filter fails, the system shall not fabricate a numeric measurement and shall return "Measurement Failure". | Reference-data/Failure-scenario test |
+| CR-INS-010 | Mandatory | The system shall verify that measurement data is sufficient and reliable before producing a valid measurement. If the required data-quality criteria are not satisfied, the system shall return "Measurement Failure". | Reference-data/Failure-scenario test |
 | CR-INS-011 | Mandatory | When the same reference object/data is measured repeatedly under the same conditions and with the same settings, the difference between the maximum and minimum values obtained for each of length, diameter, and deflection shall not exceed 10 mm. | Repeatability test |
 | CR-INS-012 | Mandatory | The deflection measurement and product decision shall be completed using the calculation mode selected in the settings at the start of the inspection; the system shall not automatically switch to another mode during measurement. | Design review/Test |
 
@@ -115,7 +110,7 @@ Compliance with a requirement shall be demonstrated by the applicable method of 
 | CR-DEC-006 | Mandatory | The presence of flare alone shall not cause rejection. | Rule review/Test |
 | CR-DEC-007 | Mandatory | The final deflection shall be the value produced by the measurement method; no deflection correction factor shall be applied to the result. | Calculation check/Test |
 | CR-DEC-008 | Mandatory | An undetermined log orientation shall not affect the acceptance/rejection outcome; the orientation shall be recorded as "Unknown". | Rule review/Test |
-| CR-DEC-009 | Mandatory | When the deflection calculation mode is "Both", the one-way and two-way results shall be reported separately. The larger of the two values shall be used as the final deflection for the acceptance/rejection decision. | Calculation check/Test |
+
 
 ### 7.4 PLC integration
 
@@ -125,7 +120,7 @@ Compliance with a requirement shall be demonstrated by the applicable method of 
 | CR-PLC-002 | Mandatory | A valid final result shall not be presented to the PLC before measurement is complete. | Integration test |
 | CR-PLC-003 | Mandatory | The system shall hold results unchanged until PLC acknowledgement is received. | Integration test |
 | CR-PLC-004 | Mandatory | PLC acknowledgement shall be accepted only while a result is being held. After acknowledgement is received, the result-valid indication and result fields shall be cleared. A new trigger shall be accepted only after the inspection request and acknowledgement signals have returned to their inactive states and the system is Ready. | Integration test |
-| CR-PLC-005 | Mandatory | If the PLC connection or heartbeat is lost, the "Ready" state shall be removed, an error shall be displayed, and controlled reconnection shall be attempted. | Failure-scenario test |
+| CR-PLC-005 | Mandatory | Loss of PLC communication shall prevent PLC-triggered inspections but shall not prevent local system operation. | Failure-scenario test |
 | CR-PLC-006 | Mandatory | Existing PLC tags, data types, and units shall not be changed without an interface change approved by both parties. Modbus is not part of this integration. | Interface review |
 | CR-PLC-007 | Mandatory | In a "Measurement Failure" condition, the PLC shall receive `Outcome=true` and `MeasurementError=true`. For a valid Accepted or Rejected result, `MeasurementError` shall be false. The system shall preserve the actual internal outcome as "Measurement Failure" on the operator screen and in the records. | Integration test |
 
@@ -167,7 +162,7 @@ Compliance with a requirement shall be demonstrated by the applicable method of 
 | CR-NFR-005 | Mandatory | An endurance test shall demonstrate that memory and device-resource usage do not grow without control during prolonged operation. | Endurance test |
 | CR-NFR-006 | Mandatory | Millimetres shall be used for length, diameter, deflection, and longitudinal-position values, and degrees shall be used for angular values. The user interface, records, exported data, and PLC interface shall use the same documented units; any PLC scaling shall be defined in the PLC contract. | Inspection/Test |
 | CR-NFR-007 | Mandatory | Every software delivery shall have a unique application version. Any change to the measurement algorithm shall require a new application version. | Version review |
-| CR-NFR-008 | Recommended | Critical calibration and decision settings should be protected against unauthorised changes, and changes should be auditable. | Security review |
+
 | CR-NFR-009 | Mandatory | PLC, camera, recording-path, and other settings shall be configurable without modifying the source code. | Demonstration |
 
 ## 9. Minimum customer acceptance scenarios
@@ -192,22 +187,6 @@ Compliance with a requirement shall be demonstrated by the applicable method of 
 | MKA-016 | Reference data with a known deflection is processed with the deflection calculation mode set in turn to "One-way", "Two-way", and "Both". | Values for the selected mode are reported separately with correct labels; in "Both" mode, the larger value is used as the final deflection, and no correction factor is applied to any result. |
 | MKA-017 | Stored logs and raw data must be archived or deleted under an external IT/operations policy. | The application does not perform automatic age-based deletion; the data can be managed outside the application. |
 | MKA-018 | PLC and manual inspection requests are issued while the system is Ready. | The first request received starts exactly one inspection and its source is recorded. The later request does not create another inspection while the first inspection is active or its result transaction is incomplete. |
-
-The final factory acceptance test (FAT) and site acceptance test (SAT) procedures shall be derived from these scenarios and the approved quantitative targets.
-
-## 10. Deliverables
-
-The minimum delivery scope includes:
-
-- Executable Balcas inspection application and version information
-- Approved default configuration and setting descriptions
-- PLC interface/data contract
-- Operator instructions
-- Installation, backup, and restore instructions
-- Error-code and troubleshooting list
-- FAT/SAT test procedures and test results
-- Approved reference datasets and regression-test summary
-- Release notes and known limitations
 
 ## 11. Customer inputs and responsibilities
 
