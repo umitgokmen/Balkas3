@@ -41,19 +41,6 @@ The system's business objectives are:
 - Recording inspection results, errors, and selected raw data
 - Single-dataset and batch simulation using recorded data
 
-### 3.2 Out of scope
-
-The following activities are not included in this delivery unless they are separately added to the scope in writing:
-
-- Controlling mechanical movements on the production line on behalf of the PLC
-- Physically directing, stopping, or separating the log
-- Modbus communication and Modbus register integration
-- ERP/MES or cloud-system integration
-- AI-based quality classification
-- Automatic camera calibration
-- Enterprise user and role management
-- Supply of cameras, PLCs, computers, network equipment, or mechanical installation
-
 ## 4. Stakeholders and users
 
 | Role | Primary expectation / responsibility |
@@ -175,7 +162,6 @@ Compliance with a requirement shall be demonstrated by the applicable method of 
 | ID | Priority | Requirement | Verification |
 |---|---|---|---|
 | MGR-NFR-001 | Mandatory | The elapsed time from the PLC trigger until the result is ready shall be measured and recorded. | Record review |
-| MGR-NFR-002 | Mandatory | A fixed maximum end-to-end inspection time is not an acceptance condition. If required, a warning threshold shall be configurable, or timing supervision shall be capable of being disabled. If the configured threshold is exceeded, the event shall be recorded and a warning shown to the operator; exceeding the threshold alone shall not change the product outcome. | Performance test/Demonstration |
 | MGR-NFR-003 | Mandatory | The user interface shall remain responsive during camera acquisition, 3D processing, and file writing. | Performance test |
 | MGR-NFR-004 | Mandatory | An unexpected error shall not cause subsequent inspections to stop silently; the system state and error reason shall be visible. | Resilience test |
 | MGR-NFR-005 | Mandatory | If a measurement cannot be produced because of camera or data quality, the error shall be visible and traceable. In accordance with the customer business rule, the internal outcome shall remain "Measurement Failure" while `Outcome=true` is sent for line flow. | Failure-scenario test |
