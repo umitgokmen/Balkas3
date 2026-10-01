@@ -120,17 +120,17 @@ Compliance with a requirement shall be demonstrated by the applicable method of 
 
 | ID | Priority | Requirement | Verification |
 |---|---|---|---|
-| CR-PLC-001 | Mandatory | The system shall manage idle, running, result-hold, and disabled states in accordance with the agreed PLC contract. A valid PLC trigger shall be a new inspection-request transition from the selected PLC source received while the system is Ready, no inspection or unacknowledged result is active, and the previous request has returned to its inactive state. Once a trigger is accepted, subsequent PLC triggers shall not create another inspection until the current transaction is complete and the interface has re-armed. | Integration test |
+| CR-PLC-001 | Mandatory | The system shall manage idle, running, and result-hold states in accordance with the agreed PLC contract. A valid PLC trigger shall be a new inspection-request transition from the selected PLC source received while the system is Ready, no inspection or unacknowledged result is active, and the previous request has returned to its inactive state. Once a trigger is accepted, subsequent PLC triggers shall not create another inspection until the current transaction is complete and the interface has re-armed. | Integration test |
 | CR-PLC-002 | Mandatory | A valid final result shall not be presented to the PLC before measurement is complete. | Integration test |
 | CR-PLC-003 | Mandatory | The system shall hold results unchanged until PLC acknowledgement is received. | Integration test |
 | CR-PLC-004 | Mandatory | PLC acknowledgement shall be accepted only while a result is being held. After acknowledgement is received, the result-valid indication and result fields shall be cleared. A new trigger shall be accepted only after the inspection request and acknowledgement signals have returned to their inactive states and the system is Ready. | Integration test |
 | CR-PLC-005 | Mandatory | Loss of communication with the selected PLC source shall prevent PLC-triggered inspections but shall not prevent local system operation. | Failure-scenario test |
-| CR-PLC-006 | Mandatory | Existing PLC tags, data types, and units shall not be changed without an interface change approved by both parties. Modbus is not part of this integration. | Interface review |
+| CR-PLC-006 | Mandatory | Existing PLC tags, data types, and units shall not be changed without an interface change approved by both parties. | Interface review |
 | CR-PLC-007 | Mandatory | In a "Measurement Failure" condition, the PLC shall receive `Outcome=true` and `MeasurementError=true`. For a valid Accepted or Rejected result, `MeasurementError` shall be false. The system shall preserve the actual internal outcome as "Measurement Failure" on the operator screen and in the records. | Integration test |
 | CR-PLC-008 | Mandatory | When Built-in PLC is selected, the system shall exchange inspection requests, status, results, and acknowledgements without requiring a physical PLC. Built-in PLC and External PLC shall use the same approved communication protocol and PLC data contract. | Integration test |
 | CR-PLC-009 | Mandatory | Built-in PLC shall allow the user to set and clear the PLC-to-system signals required for an inspection, including the inspection request and result acknowledgement, and to observe the system-to-PLC status and result values. The same trigger, result-hold, acknowledgement, and re-arm rules shall apply with either PLC source. | Demonstration/Integration test |
 | CR-PLC-010 | Mandatory | Only the selected PLC source shall exchange inspection requests and results with the system. When Built-in PLC is selected, its requests and results shall not be exchanged with External PLC. | Integration test |
-| CR-PLC-011 | Mandatory | The time allowed for the selected PLC source to acknowledge a published result shall be configurable in seconds, with a default of 60 seconds. The value shall be positive. If acknowledgement is not received within the configured time, the system shall retain the result and result-valid indication, stop accepting new inspection requests, display and record the timeout, and require the agreed PLC handshake recovery sequence before returning to Ready. The timeout setting for an active inspection shall be the value captured at its start. | Boundary-value/Integration test |
+| CR-PLC-011 | Mandatory | The time allowed for the selected PLC source to acknowledge a published result shall be configurable in seconds, with a default of 60000 seconds. The value shall be positive. If acknowledgement is not received within the configured time, the system shall retain the result and result-valid indication, stop accepting new inspection requests, display and record the timeout, and require the agreed PLC handshake recovery sequence before returning to Ready. The timeout setting for an active inspection shall be the value captured at its start. | Boundary-value/Integration test |
 
 ### 7.5 Operator interface
 
@@ -177,29 +177,17 @@ Compliance with a requirement shall be demonstrated by the applicable method of 
 
 | ID | Scenario | Expected result |
 |---|---|---|
-| MKA-001 | A valid log within limits is inspected while the system is ready. | One inspection is created; measurements are published; the outcome is "Accepted" and is held until PLC acknowledgement. |
-| MKA-002 | The deflection exceeds the permitted limit in a valid measurement. | The outcome is "Rejected"; the measured and permitted values are recorded. |
-| MKA-003 | One of the enabled cameras times out or returns empty data. | The internal outcome is "Measurement Failure", the camera error is recorded, and `Outcome=true` with `MeasurementError=true` is sent to the PLC. |
-| MKA-004 | A dataset fails one or more required data-quality filters. | No special or magic number is used in place of a physical measurement; the internal outcome is "Measurement Failure", and `Outcome=true` with `MeasurementError=true` is sent to the PLC. |
-| MKA-005 | The PLC acknowledges the result. | The result-valid indication and result fields are cleared. A new trigger is accepted only after the request and acknowledgement signals are inactive and the system has returned to "Ready". |
-| MKA-006 | The PLC trigger signal remains high. | A second inspection does not start for the same log. |
-| MKA-007 | The deflection is exactly equal to the approved limit. | The outcome is "Accepted". |
-| MKA-008 | An attempt is made to save an invalid setting. | The save is rejected and an explanatory field error is displayed. |
-| MKA-009 | A batch of ten recorded 3D datasets is processed, including one corrupt dataset. | The corrupt dataset is reported as an error; the other nine datasets are processed, and the summary contains ten records. |
-| MKA-010 | A decision setting is changed during an active inspection. | The current inspection is completed using the old setting, and the next inspection uses the new setting. |
-| MKA-011 | The same reference object/data is processed repeatedly under the same conditions and with the same settings. | Screen, record, and PLC values use the same units; for each of length, diameter, and deflection, the difference between the maximum and minimum obtained values does not exceed 10 mm. |
-| MKA-012 | The application restarts after an unexpected shutdown. | An old result is not published as though it were new, and a safe initial state is established with the PLC. |
-| MKA-013 | Live Cameras is selected and one or two cameras are disabled in the settings. | The system waits only for enabled cameras, clearly identifies disabled cameras, and runs the inspection using data from the enabled cameras. |
-| MKA-014 | Flare is detected in a valid measurement and the deflection is within limits. | The flare is recorded; it does not cause rejection by itself, and the outcome is "Accepted". |
-| MKA-015 | Orientation cannot be determined and all other measurements are valid. | The orientation is recorded as "Unknown"; orientation uncertainty does not change the acceptance/rejection outcome. |
-| MKA-017 | Stored logs and raw data must be archived or deleted under an external IT/operations policy. | The application does not perform automatic age-based deletion; the data can be managed outside the application. |
-| MKA-018 | An inspection request is issued from the selected PLC source while the system is Ready, followed by another request before the first result transaction is complete. | Exactly one inspection starts; its selected PLC source is recorded, and the later request does not create another inspection until the result transaction is complete and the interface has re-armed. |
-| MKA-019 | Built-in PLC and Live Cameras are selected, with the cameras ready and no physical PLC connected. The user opens the Built-in PLC window and issues an inspection request. | The system receives the request through the approved PLC protocol, creates one inspection, and displays its status and result values in the independent window. The record identifies Built-in PLC and Live Cameras as the sources. |
-| MKA-020 | A Built-in PLC inspection request remains active; the user then clears it and sends result acknowledgement from the Built-in PLC window. | The active request does not create a second inspection. The result remains unchanged until valid acknowledgement; after acknowledgement, the result fields are cleared and a new request is accepted only after the interface has re-armed. No request or result is exchanged with External PLC. |
-| MKA-021 | Each PLC source is selected in turn with each 3D data source, with the selected sources ready. | Inspections use the selected PLC and 3D data sources in each of the four combinations. The current selections and sources in each inspection record are visible, and results and counters for the four combinations can be viewed separately. |
-| MKA-022 | The operator changes the PLC or 3D data source selection while an inspection is active or its result awaits acknowledgement. | The active transaction continues with its original sources; the new selection takes effect only after that transaction is complete and the newly selected sources are ready. |
-| MKA-023 | The deflection-limit setting is saved at 0 and 100 mm per metre, then saving a value outside that range is attempted. | Both boundary values are accepted, values outside the range are rejected with a field error, and the default value is 15 mm per metre. |
-| MKA-024 | The selected PLC source does not acknowledge a published result within the configured timeout, first at the default 60 seconds and then at a changed valid setting. | At each timeout the result remains valid and unchanged, a visible and recorded timeout prevents a new inspection, and Ready returns only after the agreed handshake recovery sequence. |
+| MCA-001 | A valid log within limits is inspected while the system is ready. | One inspection is created; measurements are published; the outcome is "Accepted" and is held until PLC acknowledgement. |
+| MCA-002 | The deflection exceeds the permitted limit in a valid measurement. | The outcome is "Rejected"; the measured and permitted values are recorded. |
+| MCA-003 | One of the enabled cameras times out or returns empty data. | The internal outcome is "Measurement Failure", the camera error is recorded, and `Outcome=true` with `MeasurementError=true` is sent to the PLC. |
+| MCA-004 | A dataset fails one or more required data-quality filters. | No special or magic number is used in place of a physical measurement; the internal outcome is "Measurement Failure", and `Outcome=true` with `MeasurementError=true` is sent to the PLC. |
+| MCA-005 | The PLC acknowledges the result. | The result-valid indication and result fields are cleared. A new trigger is accepted only after the request and acknowledgement signals are inactive and the system has returned to "Ready". |
+| MCA-006 | The PLC trigger signal remains high. | A second inspection does not start for the same log. |
+| MCA-007 | The same reference object/data is processed repeatedly under the same conditions and with the same settings. | Screen, record, and PLC values use the same units; for each of length, diameter, and deflection, the difference between the maximum and minimum obtained values does not exceed 10 mm. |
+| MCA-008 | The application restarts after an unexpected shutdown. | An old result is not published as though it were new, and a safe initial state is established with the PLC. |
+| MCA-009 | Live Cameras is selected and one or two cameras are disabled in the settings. | The system waits only for enabled cameras, clearly identifies disabled cameras, and runs the inspection using data from the enabled cameras. |
+| MCA-010 | Flare is detected in a valid measurement and the deflection is within limits. | The flare is recorded; it does not cause rejection by itself, and the outcome is "Accepted". |
+| MCA-011 | Built-in PLC and Live Cameras are selected, with the cameras ready and no physical PLC connected. The user opens the Built-in PLC window and issues an inspection request. | The system receives the request through the approved PLC protocol, creates one inspection, and displays its status and result values in the independent window. The record identifies Built-in PLC and Live Cameras as the sources. |
 
 ## 10. Customer inputs and responsibilities
 
@@ -212,8 +200,6 @@ The customer or a party authorised by the customer shall provide and approve the
 - Acceptance/rejection business rules and line behaviour in the event of failure
 - Reference logs/datasets and expected results
 - Disk quota, archiving, backup, and deletion policy for raw data and logs, to be operated outside the application
-- Production-network access, user permissions, and cybersecurity rules
-- FAT and SAT environments, test time, and acceptance authorities
 
 The affected requirements cannot receive final verification until these inputs have been provided.
 
