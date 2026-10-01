@@ -4,9 +4,9 @@
 |---|---|
 | Document code | BLC-CRD-001 |
 | Document type | Customer Requirements Document (CRD / URS) |
-| Version | 0.4 |
+| Version | 0.5 |
 
-| Date | 28 September 2026 |
+| Date | 1 October 2026 |
 
 | Customer | Balcas |
 
@@ -22,7 +22,7 @@ The system's business objectives are:
 - When a reliable measurement cannot be produced, record the condition as "Measurement Failure" and, in accordance with the production-loss business rule, send `Outcome=true` to the PLC so that the log continues along the acceptance path.
 - Present results clearly to the operator and transfer them safely to the PLC.
 - Record inspections traceably so that production issues can be investigated.
-- Support testing and repeat analysis independently of the production line by using recorded data.
+- Support repeat analysis independently of the production line by using recorded 3D data.
 
 ## 3. Scope
 
@@ -32,9 +32,11 @@ The system's business objectives are:
 - Measuring length, diameter, orientation, flare, and deflection
 - Producing acceptance, rejection, and measurement-failure decisions
 - Exchanging trigger, status, result, and acknowledgement information with the PLC
+- Selecting either an external PLC or a built-in PLC for the request, result, and acknowledgement exchange
+- Selecting either live cameras or recorded 3D data as the inspection input
 - Operator screens, settings, and diagnostic views
 - Recording inspection results, errors, and selected raw data
-- Single-dataset and batch simulation using recorded data
+- Single-dataset and batch processing using recorded 3D data
 
 ## 4. Stakeholders and users
 
@@ -60,13 +62,13 @@ Compliance with a requirement shall be demonstrated by the applicable method of 
 
 ## 6. General operating scenario
 
-1. The system starts, loads the last successfully saved valid settings, and connects to the PLC and enabled cameras.
-2. If the required connections and settings are valid, the system enters the "Ready" state.
-3. The PLC sends an inspection request for a new log.
-4. The system acquires 3D data from the enabled cameras and creates a single inspection record.
+1. The system starts, loads the last successfully saved valid settings, and prepares the selected PLC and 3D data sources.
+2. If the selected sources and required settings are ready, the system enters the "Ready" state.
+3. The selected PLC sends an inspection request for a new log.
+4. The system obtains 3D data from the selected source and creates a single inspection record.
 5. Data sufficiency is checked; if the data is valid, measurements and the product decision are calculated.
-6. The result is sent to the PLC and displayed on the operator screen.
-7. The system holds the result unchanged until the PLC acknowledges receipt.
+6. The result is sent to the selected PLC and displayed on the operator screen.
+7. The system holds the result unchanged until the selected PLC acknowledges receipt.
 8. After acknowledgement, the result fields are cleared and the system becomes ready for the next log.
 
 ## 7. Customer requirements
@@ -77,9 +79,11 @@ Compliance with a requirement shall be demonstrated by the applicable method of 
 |---|---|---|---|
 | CR-OPS-001 | Mandatory | On start-up, the system shall load the last successfully saved valid settings. | Test |
 | CR-OPS-002 | Mandatory | If settings are missing, corrupt, or invalid, the system shall inform the operator and shall not behave as though it is producing reliable measurements. | Test |
-| CR-OPS-003 | Mandatory | In production mode, the system shall not indicate "Ready" until all enabled cameras and PLC communication are ready. All three cameras shall be enabled in the default production configuration. | Test |
-| CR-OPS-004 | Mandatory | The system shall clearly indicate whether its operating mode is "Production" or "Simulation". | Demonstration |
+| CR-OPS-003 | Mandatory | The system shall not indicate "Ready" until the selected PLC source and selected 3D data source are ready. When Live Cameras is selected, every enabled camera shall be ready. All three cameras shall be enabled in the default configuration. | Test |
+| CR-OPS-004 | Mandatory | The system shall clearly display the selected PLC source and 3D data source while inspections can be started. | Demonstration |
 | CR-OPS-005 | Mandatory | After a controlled shutdown or an unexpected restart, the system shall return to a safe, defined initial state with the PLC. | Test |
+| CR-OPS-006 | Mandatory | The settings shall allow External PLC or Built-in PLC to be selected as the PLC source, independently of selecting Live Cameras or Recorded 3D Data as the inspection input. | Demonstration |
+| CR-OPS-007 | Mandatory | A change to either selected source shall not take effect during an active inspection or while a result awaits PLC acknowledgement. The new selection shall take effect only after the current transaction has completed and the newly selected sources are ready. | Test |
 
 ### 7.2 Inspection and measurement
 
@@ -87,7 +91,7 @@ Compliance with a requirement shall be demonstrated by the applicable method of 
 |---|---|---|---|
 | CR-INS-001 | Mandatory | Each valid PLC trigger shall create exactly one inspection. A trigger that remains active for an extended period shall not cause a second inspection. | Test |
 | CR-INS-002 | Mandatory | Each inspection shall have a unique identifier, and the same identifier shall be used on screen, in logs, in results, and in stored data. | Inspection/Test |
-| CR-INS-003 | Mandatory | The system shall support three independent 3D camera channels and collect data from enabled cameras within the same inspection. All three cameras shall be enabled by default, and each camera shall be capable of being disabled individually for testing. | Test |
+| CR-INS-003 | Mandatory | When Live Cameras is selected, the system shall support three independent 3D camera channels and collect data from enabled cameras within the same inspection. All three cameras shall be enabled by default, and each camera shall be capable of being disabled individually. | Test |
 | CR-INS-004 | Mandatory | The system shall measure the log length in millimetres. | Reference-object test |
 | CR-INS-005 | Mandatory | The system shall measure the minimum, median, and maximum stem diameters in millimetres. | Reference-object test |
 | CR-INS-006 | Mandatory | The system shall report the log orientation as "butt end leading", "butt end trailing", or "unknown". | Labelled-data test |
@@ -120,34 +124,38 @@ Compliance with a requirement shall be demonstrated by the applicable method of 
 | CR-PLC-002 | Mandatory | A valid final result shall not be presented to the PLC before measurement is complete. | Integration test |
 | CR-PLC-003 | Mandatory | The system shall hold results unchanged until PLC acknowledgement is received. | Integration test |
 | CR-PLC-004 | Mandatory | PLC acknowledgement shall be accepted only while a result is being held. After acknowledgement is received, the result-valid indication and result fields shall be cleared. A new trigger shall be accepted only after the inspection request and acknowledgement signals have returned to their inactive states and the system is Ready. | Integration test |
-| CR-PLC-005 | Mandatory | Loss of PLC communication shall prevent PLC-triggered inspections but shall not prevent local system operation. | Failure-scenario test |
+| CR-PLC-005 | Mandatory | Loss of communication with the selected PLC source shall prevent PLC-triggered inspections but shall not prevent local system operation. | Failure-scenario test |
 | CR-PLC-006 | Mandatory | Existing PLC tags, data types, and units shall not be changed without an interface change approved by both parties. Modbus is not part of this integration. | Interface review |
 | CR-PLC-007 | Mandatory | In a "Measurement Failure" condition, the PLC shall receive `Outcome=true` and `MeasurementError=true`. For a valid Accepted or Rejected result, `MeasurementError` shall be false. The system shall preserve the actual internal outcome as "Measurement Failure" on the operator screen and in the records. | Integration test |
+| CR-PLC-008 | Mandatory | When Built-in PLC is selected, the system shall exchange inspection requests, status, results, and acknowledgements without requiring a physical PLC. Built-in PLC and External PLC shall use the same approved communication protocol and PLC data contract. | Integration test |
+| CR-PLC-009 | Mandatory | Built-in PLC shall allow the user to set and clear the PLC-to-system signals required for an inspection, including the inspection request and result acknowledgement, and to observe the system-to-PLC status and result values. The same trigger, result-hold, acknowledgement, and re-arm rules shall apply with either PLC source. | Demonstration/Integration test |
+| CR-PLC-010 | Mandatory | Only the selected PLC source shall exchange inspection requests and results with the system. When Built-in PLC is selected, its requests and results shall not be exchanged with External PLC. | Integration test |
 
 ### 7.5 Operator interface
 
 | ID | Priority | Requirement | Verification |
 |---|---|---|---|
-| CR-UI-001 | Mandatory | The main screen shall show the status of each camera channel and the PLC connection. | Demonstration |
+| CR-UI-001 | Mandatory | The main screen shall show the status of the selected PLC source and 3D data source. When Live Cameras is selected, it shall show the status of each camera channel. | Demonstration |
 | CR-UI-002 | Mandatory | The main screen shall show the latest inspection's identifier, outcome, length, diameters, deflection, permitted deflection, orientation, and flare information. | Demonstration |
 | CR-UI-003 | Mandatory | Acceptance, rejection, and measurement failure shall be distinguished by explicit text as well as by colour. | Demonstration |
 | CR-UI-004 | Mandatory | Counters for total triggers, completed inspections, acceptances, rejections, and measurement failures shall be displayed separately. | Test |
-| CR-UI-005 | Mandatory | Production and simulation results and counters shall not be mixed. | Test |
+| CR-UI-005 | Mandatory | Results and counters shall be available separately for each PLC-source and 3D-data-source combination. The sources used for each result shall be visible. | Test |
 | CR-UI-006 | Mandatory | Invalid settings shall not be saved; the affected field and reason for the error shall be shown to the operator. | Test |
 | CR-UI-007 | Mandatory | An inspection in progress shall be completed using the settings present at its start; subsequent changes shall apply to the next inspection. | Test |
 | CR-UI-008 | Recommended | Authorised users should be able to view raw, processed, and measured 3D data for diagnostic purposes. | Demonstration |
 | CR-UI-009 | Mandatory | The operator interface shall provide a manual inspection command. The command shall be enabled only when the system is Ready to start a new inspection. PLC and manual requests shall be handled on a first-come, first-served basis: acceptance of either request shall immediately prevent every subsequent request from creating another inspection until the current inspection reaches its terminal state and the system becomes Ready again. A manually initiated inspection shall be clearly marked in the records. | Demonstration/Test |
+| CR-UI-010 | Mandatory | When Built-in PLC is selected, the operator shall be able to open an independent Built-in PLC window. The window shall show the PLC-to-system signal values entered by the user and the system-to-PLC status and result values. | Demonstration |
 
-### 7.6 Simulation, recording, and reporting
+### 7.6 Recorded data, recording, and reporting
 
 | ID | Priority | Requirement | Verification |
 |---|---|---|---|
-| CR-DATA-001 | Mandatory | The system shall be able to run the same measurement and decision implementation on recorded 3D data without requiring a physical camera. Production and Simulation modes shall use the same application version, measurement algorithms, data-quality filters, settings interpretation, and decision rules. | Equivalence test |
+| CR-DATA-001 | Mandatory | The system shall be able to run the same measurement and decision implementation on recorded 3D data without requiring a physical camera. Live Cameras and Recorded 3D Data shall use the same application version, measurement algorithms, data-quality filters, settings interpretation, and decision rules. | Equivalence test |
 | CR-DATA-002 | Mandatory | A single dataset and all datasets in a folder shall be executable through separate commands. | Demonstration |
-| CR-DATA-003 | Mandatory | In batch simulation, a corrupt dataset shall not prevent other datasets from being processed. | Test |
-| CR-DATA-004 | Mandatory | The batch-simulation summary shall include the outcome, measurements, duration, and error reason for each dataset. | Output review |
-| CR-DATA-005 | Recommended | The batch-simulation summary should be exportable in CSV or JSON format. | Demonstration |
-| CR-DATA-006 | Mandatory | For each inspection, the start/end time, identifier, trigger source, operating mode, internal outcome, PLC `Outcome` and `MeasurementError` values where applicable, measurements, error, duration, application version, active calibration JSON file identifier/version, and the settings snapshot used for the inspection shall be recorded. Calibration data shall be maintained in a JSON file. | Record review |
+| CR-DATA-003 | Mandatory | In batch processing of recorded 3D data, a corrupt dataset shall not prevent other datasets from being processed. | Test |
+| CR-DATA-004 | Mandatory | The batch-processing summary shall include the outcome, measurements, duration, and error reason for each dataset. | Output review |
+| CR-DATA-005 | Recommended | The batch-processing summary should be exportable in CSV or JSON format. | Demonstration |
+| CR-DATA-006 | Mandatory | For each inspection, the start/end time, identifier, trigger source, selected PLC source, selected 3D data source, internal outcome, PLC `Outcome` and `MeasurementError` values where applicable, measurements, error, duration, application version, active calibration JSON file identifier/version, and the settings snapshot used for the inspection shall be recorded. Calibration data shall be maintained in a JSON file. | Record review |
 | CR-DATA-007 | Mandatory | Storage of raw data for manual inspections, rejections, measurement failures, or diagnostic purposes shall be independently configurable. | Test |
 | CR-DATA-008 | Mandatory | The application is not required to delete logs or raw data automatically based on age. Retention, archiving, backup, disk quotas, deletion, and storage-failure recovery shall be managed by IT/operations outside the application. | Design review/Demonstration |
 
@@ -163,7 +171,7 @@ Compliance with a requirement shall be demonstrated by the applicable method of 
 | CR-NFR-006 | Mandatory | Millimetres shall be used for length, diameter, deflection, and longitudinal-position values, and degrees shall be used for angular values. The user interface, records, exported data, and PLC interface shall use the same documented units; any PLC scaling shall be defined in the PLC contract. | Inspection/Test |
 | CR-NFR-007 | Mandatory | Every software delivery shall have a unique application version. Any change to the measurement algorithm shall require a new application version. | Version review |
 
-| CR-NFR-009 | Mandatory | PLC, camera, recording-path, and other settings shall be configurable without modifying the source code. | Demonstration |
+| CR-NFR-009 | Mandatory | PLC source, 3D data source, PLC connection, camera, recording-path, and other settings shall be configurable without modifying the source code. | Demonstration |
 
 ## 9. Minimum customer acceptance scenarios
 
@@ -177,16 +185,20 @@ Compliance with a requirement shall be demonstrated by the applicable method of 
 | MKA-006 | The PLC trigger signal remains high. | A second inspection does not start for the same log. |
 | MKA-007 | The deflection is exactly equal to the approved limit. | The outcome is "Accepted". |
 | MKA-008 | An attempt is made to save an invalid setting. | The save is rejected and an explanatory field error is displayed. |
-| MKA-009 | A batch simulation is run with one corrupt dataset among ten datasets. | The corrupt dataset is reported as an error; the other nine datasets are processed, and the summary contains ten records. |
+| MKA-009 | A batch of ten recorded 3D datasets is processed, including one corrupt dataset. | The corrupt dataset is reported as an error; the other nine datasets are processed, and the summary contains ten records. |
 | MKA-010 | A decision setting is changed during an active inspection. | The current inspection is completed using the old setting, and the next inspection uses the new setting. |
 | MKA-011 | The same reference object/data is processed repeatedly under the same conditions and with the same settings. | Screen, record, and PLC values use the same units; for each of length, diameter, and deflection, the difference between the maximum and minimum obtained values does not exceed 10 mm. |
 | MKA-012 | The application restarts after an unexpected shutdown. | An old result is not published as though it were new, and a safe initial state is established with the PLC. |
-| MKA-013 | One or two cameras are disabled in the test configuration. | The system waits only for enabled cameras, clearly identifies disabled cameras, and runs the test inspection using data from the enabled cameras. |
+| MKA-013 | Live Cameras is selected and one or two cameras are disabled in the settings. | The system waits only for enabled cameras, clearly identifies disabled cameras, and runs the inspection using data from the enabled cameras. |
 | MKA-014 | Flare is detected in a valid measurement and the deflection is within limits. | The flare is recorded; it does not cause rejection by itself, and the outcome is "Accepted". |
 | MKA-015 | Orientation cannot be determined and all other measurements are valid. | The orientation is recorded as "Unknown"; orientation uncertainty does not change the acceptance/rejection outcome. |
 | MKA-016 | Reference data with a known deflection is processed with the deflection calculation mode set in turn to "One-way", "Two-way", and "Both". | Values for the selected mode are reported separately with correct labels; in "Both" mode, the larger value is used as the final deflection, and no correction factor is applied to any result. |
 | MKA-017 | Stored logs and raw data must be archived or deleted under an external IT/operations policy. | The application does not perform automatic age-based deletion; the data can be managed outside the application. |
 | MKA-018 | PLC and manual inspection requests are issued while the system is Ready. | The first request received starts exactly one inspection and its source is recorded. The later request does not create another inspection while the first inspection is active or its result transaction is incomplete. |
+| MKA-019 | Built-in PLC and Live Cameras are selected, with the cameras ready and no physical PLC connected. The user opens the Built-in PLC window and issues an inspection request. | The system receives the request through the approved PLC protocol, creates one inspection, and displays its status and result values in the independent window. The record identifies Built-in PLC and Live Cameras as the sources. |
+| MKA-020 | A Built-in PLC inspection request remains active; the user then clears it and sends result acknowledgement from the Built-in PLC window. | The active request does not create a second inspection. The result remains unchanged until valid acknowledgement; after acknowledgement, the result fields are cleared and a new request is accepted only after the interface has re-armed. No request or result is exchanged with External PLC. |
+| MKA-021 | Each PLC source is selected in turn with each 3D data source, with the selected sources ready. | Inspections use the selected PLC and 3D data sources in each of the four combinations. The current selections and sources in each inspection record are visible, and results and counters for the four combinations can be viewed separately. |
+| MKA-022 | The operator changes the PLC or 3D data source selection while an inspection is active or its result awaits acknowledgement. | The active transaction continues with its original sources; the new selection takes effect only after that transaction is complete and the newly selected sources are ready. |
 
 ## 11. Customer inputs and responsibilities
 
@@ -221,3 +233,7 @@ After approval, changes to scope, business rules, interfaces, or acceptance crit
 - Site conditions such as ambient light, vibration, contamination, temperature, and network load are maintained within the agreed operating range.
 
 ## Appendix A — Revision history
+
+| Version | Date | Change |
+|---|---|---|
+| 0.5 | 1 October 2026 | Added independent PLC and 3D data source selection, Built-in PLC window, and related acceptance scenarios. |
