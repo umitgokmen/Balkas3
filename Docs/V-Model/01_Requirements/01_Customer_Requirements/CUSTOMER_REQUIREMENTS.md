@@ -6,7 +6,7 @@
 |---|---|
 | Document code | BLC-CRD-001 |
 | Document type | Customer Requirements Document (CRD / URS) |
-| Version | 0.6 |
+| Version | 0.7 |
 
 | Date | 1 October 2026 |
 
@@ -37,6 +37,7 @@ The system's business objectives are:
 - Selecting either an external PLC or a built-in PLC for the request, result, and acknowledgement exchange
 - Selecting either live cameras or recorded 3D data as the inspection input
 - Operator screens, settings, and diagnostic views
+- Optional interactive point-cloud inspection on the main screen, with stage-by-stage continuation
 - Recording inspection results, errors, and selected raw data
 - Single-dataset and batch processing using recorded 3D data
 
@@ -72,6 +73,8 @@ Compliance with a requirement shall be demonstrated by the applicable method of 
 6. The result is sent to the selected PLC and displayed on the operator screen.
 7. The system holds the result unchanged until the selected PLC acknowledges receipt.
 8. After acknowledgement, the result fields are cleared and the system becomes ready for the next log.
+
+When interactive point-cloud inspection is enabled, the inspection pauses after each processing stage for which point-cloud data is available. The operator reviews the current data and uses Continue to start the next stage. This mode is disabled by default; with it disabled, the inspection proceeds automatically through the stages.
 
 ## 7. Customer requirements
 
@@ -145,6 +148,10 @@ Compliance with a requirement shall be demonstrated by the applicable method of 
 | CR-UI-007 | Mandatory | An inspection in progress shall be completed using the settings present at its start; subsequent changes shall apply to the next inspection. | Test |
 | CR-UI-008 | Recommended | Authorised users should be able to view raw, processed, and measured 3D data for diagnostic purposes. | Demonstration |
 | CR-UI-010 | Mandatory | When Built-in PLC is selected, the operator shall be able to open an independent Built-in PLC window. The window shall show the PLC-to-system signal values entered by the user and the system-to-PLC status and result values. | Demonstration |
+| CR-UI-011 | Mandatory | The main screen shall provide an interactive point-cloud viewer. When interactive point-cloud inspection is enabled, this viewer shall occupy the largest area of the main window and show the point cloud available at the current inspection stage. The current stage and inspection identifier shall be visible alongside it. | Demonstration |
+| CR-UI-012 | Mandatory | The point-cloud viewer shall support mouse-controlled rotation, zoom in, zoom out, and pan, and shall provide a way to restore a view of the complete current point cloud. These controls shall remain usable while the inspection is paused. | Demonstration |
+| CR-UI-013 | Mandatory | The settings shall provide an interactive point-cloud inspection option that is disabled by default. When enabled, the system shall pause after each inspection processing stage for which point-cloud data is available, display that stage's current point cloud, and wait for an explicit Continue command before starting the next stage. Each Continue command shall advance no more than one stage. When disabled, processing shall advance automatically without waiting for Continue or rendering stage point clouds. | Test/Demonstration |
+| CR-UI-014 | Mandatory | While an inspection is paused for point-cloud review, the system shall identify it as in progress, shall not accept another inspection request, and shall not publish a final PLC result before processing has completed. A stage that ends in Measurement Failure shall display the available point cloud and error reason before the operator continues to finalise the inspection; if no point cloud is available, the error shall remain visible without requiring point-cloud interaction. After finalisation, the normal result-hold and acknowledgement rules shall apply. | Integration/Failure-scenario test |
 
 ### 7.6 Recorded data, recording, and reporting
 
@@ -172,6 +179,7 @@ Compliance with a requirement shall be demonstrated by the applicable method of 
 | CR-NFR-007 | Mandatory | Every software delivery shall have a unique application version. Any change to the measurement algorithm shall require a new application version. | Version review |
 
 | CR-NFR-009 | Mandatory | PLC source, 3D data source, PLC connection, camera, recording-path, and other settings shall be configurable without modifying the source code. | Demonstration |
+| CR-NFR-010 | Mandatory | With interactive point-cloud inspection disabled, stage point clouds shall not be rendered for the main-screen viewer, and the inspection shall not wait for operator continuation. | Performance test/Inspection |
 
 ## 9. Minimum customer acceptance scenarios
 
@@ -188,6 +196,8 @@ Compliance with a requirement shall be demonstrated by the applicable method of 
 | MCA-009 | Live Cameras is selected and one or two cameras are disabled in the settings. | The system waits only for enabled cameras, clearly identifies disabled cameras, and runs the inspection using data from the enabled cameras. |
 | MCA-010 | Flare is detected in a valid measurement and the deflection is within limits. | The flare is recorded; it does not cause rejection by itself, and the outcome is "Accepted". |
 | MCA-011 | Built-in PLC and Live Cameras are selected, with the cameras ready and no physical PLC connected. The user opens the Built-in PLC window and issues an inspection request. | The system receives the request through the approved PLC protocol, creates one inspection, and displays its status and result values in the independent window. The record identifies Built-in PLC and Live Cameras as the sources. |
+| MCA-012 | Interactive point-cloud inspection is enabled and an inspection is started. The operator navigates the point cloud and then presses Continue at each stage. | The current stage and point cloud are shown in the largest area of the main window; rotation, zoom in/out, pan, and restore-view work. Processing remains paused until Continue is pressed, and each press starts only the next stage. No final PLC result is published while a stage is paused. |
+| MCA-013 | The application starts with the interactive point-cloud inspection setting at its default, and an inspection is run. | The option is off; stage point clouds are not rendered in the main-screen viewer, no Continue command is required, and the normal PLC result-hold and acknowledgement sequence completes. |
 
 ## 10. Customer inputs and responsibilities
 
@@ -223,5 +233,6 @@ After approval, changes to scope, business rules, interfaces, or acceptance crit
 
 | Version | Date | Change |
 |---|---|---|
+| 0.7 | 1 October 2026 | Added optional main-screen point-cloud review with mouse navigation, stage-by-stage Continue, and a disabled-by-default setting. |
 | 0.6 | 1 October 2026 | Replaced manual inspection with Built-in PLC requests; defined the PLC acknowledgement timeout and deflection-limit range; corrected section numbering. |
 | 0.5 | 1 October 2026 | Added independent PLC and 3D data source selection, Built-in PLC window, and related acceptance scenarios. |
