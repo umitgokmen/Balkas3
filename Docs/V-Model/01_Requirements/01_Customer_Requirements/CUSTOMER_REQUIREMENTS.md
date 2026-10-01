@@ -113,8 +113,7 @@ Compliance with a requirement shall be demonstrated by the applicable method of 
 | CR-DEC-004 | Mandatory | For a valid measurement, if the deflection is greater than the permitted value, the outcome shall be "Rejected". | Boundary-value test |
 | CR-DEC-005 | Mandatory | When a reliable decision cannot be produced, the internal outcome shall be "Measurement Failure". To reduce production loss, the system shall send `Outcome=true` to the PLC so that the log proceeds along the acceptance path. The system shall also set a separate PLC `MeasurementError` tag so that this condition can be distinguished from a valid accepted measurement, and error details shall be recorded separately. | Failure-scenario test |
 | CR-DEC-006 | Mandatory | The presence of flare alone shall not cause rejection. | Rule review/Test |
-| CR-DEC-007 | Mandatory | The final deflection shall be the value produced by the measurement method; no deflection correction factor shall be applied to the result. | Calculation check/Test |
-| CR-DEC-008 | Mandatory | An undetermined log orientation shall not affect the acceptance/rejection outcome; the orientation shall be recorded as "Unknown". | Rule review/Test |
+| CR-DEC-007 | Mandatory | An undetermined log orientation shall not affect the acceptance/rejection outcome; the orientation shall be recorded as "Unknown". | Rule review/Test |
 
 
 ### 7.4 PLC integration
