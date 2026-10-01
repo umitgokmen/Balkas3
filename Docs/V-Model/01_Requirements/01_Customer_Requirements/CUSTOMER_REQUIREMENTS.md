@@ -100,7 +100,6 @@ Compliance with a requirement shall be demonstrated by the applicable method of 
 | CR-INS-009 | Mandatory | The flare region and measurement segments determined to be unreliable shall not distort the normal stem-diameter or deflection calculation. | Reference-data test |
 | CR-INS-010 | Mandatory | The system shall verify that measurement data is sufficient and reliable before producing a valid measurement. If the required data-quality criteria are not satisfied, the system shall return "Measurement Failure". | Reference-data/Failure-scenario test |
 | CR-INS-011 | Mandatory | When the same reference object/data is measured repeatedly under the same conditions and with the same settings, the difference between the maximum and minimum values obtained for each of length, diameter, and deflection shall not exceed 10 mm. | Repeatability test |
-| CR-INS-012 | Mandatory | The deflection measurement and product decision shall be completed using the calculation mode selected in the settings at the start of the inspection; the system shall not automatically switch to another mode during measurement. | Design review/Test |
 
 ### 7.3 Decision rules
 
@@ -192,7 +191,6 @@ Compliance with a requirement shall be demonstrated by the applicable method of 
 | MKA-013 | Live Cameras is selected and one or two cameras are disabled in the settings. | The system waits only for enabled cameras, clearly identifies disabled cameras, and runs the inspection using data from the enabled cameras. |
 | MKA-014 | Flare is detected in a valid measurement and the deflection is within limits. | The flare is recorded; it does not cause rejection by itself, and the outcome is "Accepted". |
 | MKA-015 | Orientation cannot be determined and all other measurements are valid. | The orientation is recorded as "Unknown"; orientation uncertainty does not change the acceptance/rejection outcome. |
-| MKA-016 | Reference data with a known deflection is processed with the deflection calculation mode set in turn to "One-way", "Two-way", and "Both". | Values for the selected mode are reported separately with correct labels; in "Both" mode, the larger value is used as the final deflection, and no correction factor is applied to any result. |
 | MKA-017 | Stored logs and raw data must be archived or deleted under an external IT/operations policy. | The application does not perform automatic age-based deletion; the data can be managed outside the application. |
 | MKA-018 | PLC and manual inspection requests are issued while the system is Ready. | The first request received starts exactly one inspection and its source is recorded. The later request does not create another inspection while the first inspection is active or its result transaction is incomplete. |
 | MKA-019 | Built-in PLC and Live Cameras are selected, with the cameras ready and no physical PLC connected. The user opens the Built-in PLC window and issues an inspection request. | The system receives the request through the approved PLC protocol, creates one inspection, and displays its status and result values in the independent window. The record identifies Built-in PLC and Live Cameras as the sources. |
