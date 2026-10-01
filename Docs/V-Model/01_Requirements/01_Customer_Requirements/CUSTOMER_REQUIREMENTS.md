@@ -1,10 +1,12 @@
 # Balcas Customer Requirements Document
 
+## 1. Document control
+
 | Document field | Value |
 |---|---|
 | Document code | BLC-CRD-001 |
 | Document type | Customer Requirements Document (CRD / URS) |
-| Version | 0.5 |
+| Version | 0.6 |
 
 | Date | 1 October 2026 |
 
@@ -106,7 +108,7 @@ Compliance with a requirement shall be demonstrated by the applicable method of 
 | ID | Priority | Requirement | Verification |
 |---|---|---|---|
 | CR-DEC-001 | Mandatory | The system shall distinguish three outcomes: "Accepted", "Rejected", and "Measurement Failure". | Test |
-| CR-DEC-002 | Mandatory | The permitted deflection shall be calculated from the log length and a configurable deflection limit per metre. The default value shall be 15 mm per metre, and the operator shall be able to change it in the settings. | Calculation check/Demonstration |
+| CR-DEC-002 | Mandatory | The permitted deflection shall be calculated from the log length and a configurable deflection limit per metre. The setting shall accept values from 0 to 100 mm per metre, inclusive, with a default of 15 mm per metre. The operator shall be able to change it in the settings; values outside this range shall not be saved. | Boundary-value test/Calculation check/Demonstration |
 | CR-DEC-003 | Mandatory | For a valid measurement, if the deflection is equal to or less than the permitted value, the outcome shall be "Accepted". | Boundary-value test |
 | CR-DEC-004 | Mandatory | For a valid measurement, if the deflection is greater than the permitted value, the outcome shall be "Rejected". | Boundary-value test |
 | CR-DEC-005 | Mandatory | When a reliable decision cannot be produced, the internal outcome shall be "Measurement Failure". To reduce production loss, the system shall send `Outcome=true` to the PLC so that the log proceeds along the acceptance path. The system shall also set a separate PLC `MeasurementError` tag so that this condition can be distinguished from a valid accepted measurement, and error details shall be recorded separately. | Failure-scenario test |
@@ -119,7 +121,7 @@ Compliance with a requirement shall be demonstrated by the applicable method of 
 
 | ID | Priority | Requirement | Verification |
 |---|---|---|---|
-| CR-PLC-001 | Mandatory | The system shall manage idle, running, result-hold, and disabled states in accordance with the agreed PLC contract. A valid PLC trigger shall be a new inspection-request transition received while the system is Ready, no inspection or unacknowledged result is active, and the previous request has returned to its inactive state. Once a trigger is accepted, subsequent PLC or manual triggers shall not create another inspection until the current transaction is complete and the interface has re-armed. | Integration test |
+| CR-PLC-001 | Mandatory | The system shall manage idle, running, result-hold, and disabled states in accordance with the agreed PLC contract. A valid PLC trigger shall be a new inspection-request transition from the selected PLC source received while the system is Ready, no inspection or unacknowledged result is active, and the previous request has returned to its inactive state. Once a trigger is accepted, subsequent PLC triggers shall not create another inspection until the current transaction is complete and the interface has re-armed. | Integration test |
 | CR-PLC-002 | Mandatory | A valid final result shall not be presented to the PLC before measurement is complete. | Integration test |
 | CR-PLC-003 | Mandatory | The system shall hold results unchanged until PLC acknowledgement is received. | Integration test |
 | CR-PLC-004 | Mandatory | PLC acknowledgement shall be accepted only while a result is being held. After acknowledgement is received, the result-valid indication and result fields shall be cleared. A new trigger shall be accepted only after the inspection request and acknowledgement signals have returned to their inactive states and the system is Ready. | Integration test |
@@ -129,6 +131,7 @@ Compliance with a requirement shall be demonstrated by the applicable method of 
 | CR-PLC-008 | Mandatory | When Built-in PLC is selected, the system shall exchange inspection requests, status, results, and acknowledgements without requiring a physical PLC. Built-in PLC and External PLC shall use the same approved communication protocol and PLC data contract. | Integration test |
 | CR-PLC-009 | Mandatory | Built-in PLC shall allow the user to set and clear the PLC-to-system signals required for an inspection, including the inspection request and result acknowledgement, and to observe the system-to-PLC status and result values. The same trigger, result-hold, acknowledgement, and re-arm rules shall apply with either PLC source. | Demonstration/Integration test |
 | CR-PLC-010 | Mandatory | Only the selected PLC source shall exchange inspection requests and results with the system. When Built-in PLC is selected, its requests and results shall not be exchanged with External PLC. | Integration test |
+| CR-PLC-011 | Mandatory | The time allowed for the selected PLC source to acknowledge a published result shall be configurable in seconds, with a default of 60 seconds. The value shall be positive. If acknowledgement is not received within the configured time, the system shall retain the result and result-valid indication, stop accepting new inspection requests, display and record the timeout, and require the agreed PLC handshake recovery sequence before returning to Ready. The timeout setting for an active inspection shall be the value captured at its start. | Boundary-value/Integration test |
 
 ### 7.5 Operator interface
 
@@ -142,7 +145,6 @@ Compliance with a requirement shall be demonstrated by the applicable method of 
 | CR-UI-006 | Mandatory | Invalid settings shall not be saved; the affected field and reason for the error shall be shown to the operator. | Test |
 | CR-UI-007 | Mandatory | An inspection in progress shall be completed using the settings present at its start; subsequent changes shall apply to the next inspection. | Test |
 | CR-UI-008 | Recommended | Authorised users should be able to view raw, processed, and measured 3D data for diagnostic purposes. | Demonstration |
-| CR-UI-009 | Mandatory | The operator interface shall provide a manual inspection command. The command shall be enabled only when the system is Ready to start a new inspection. PLC and manual requests shall be handled on a first-come, first-served basis: acceptance of either request shall immediately prevent every subsequent request from creating another inspection until the current inspection reaches its terminal state and the system becomes Ready again. A manually initiated inspection shall be clearly marked in the records. | Demonstration/Test |
 | CR-UI-010 | Mandatory | When Built-in PLC is selected, the operator shall be able to open an independent Built-in PLC window. The window shall show the PLC-to-system signal values entered by the user and the system-to-PLC status and result values. | Demonstration |
 
 ### 7.6 Recorded data, recording, and reporting
@@ -154,8 +156,8 @@ Compliance with a requirement shall be demonstrated by the applicable method of 
 | CR-DATA-003 | Mandatory | In batch processing of recorded 3D data, a corrupt dataset shall not prevent other datasets from being processed. | Test |
 | CR-DATA-004 | Mandatory | The batch-processing summary shall include the outcome, measurements, duration, and error reason for each dataset. | Output review |
 | CR-DATA-005 | Recommended | The batch-processing summary should be exportable in CSV or JSON format. | Demonstration |
-| CR-DATA-006 | Mandatory | For each inspection, the start/end time, identifier, trigger source, selected PLC source, selected 3D data source, internal outcome, PLC `Outcome` and `MeasurementError` values where applicable, measurements, error, duration, application version, active calibration JSON file identifier/version, and the settings snapshot used for the inspection shall be recorded. Calibration data shall be maintained in a JSON file. | Record review |
-| CR-DATA-007 | Mandatory | Storage of raw data for manual inspections, rejections, measurement failures, or diagnostic purposes shall be independently configurable. | Test |
+| CR-DATA-006 | Mandatory | For each inspection, the start/end time, identifier, selected PLC trigger source, selected 3D data source, internal outcome, PLC `Outcome` and `MeasurementError` values where applicable, measurements, error, duration, application version, active calibration JSON file identifier/version, and the settings snapshot used for the inspection shall be recorded. Calibration data shall be maintained in a JSON file. | Record review |
+| CR-DATA-007 | Mandatory | Storage of raw data for Rejected outcomes, Measurement Failure outcomes, and diagnostic purposes shall be independently configurable. | Test |
 | CR-DATA-008 | Mandatory | The application is not required to delete logs or raw data automatically based on age. Retention, archiving, backup, disk quotas, deletion, and storage-failure recovery shall be managed by IT/operations outside the application. | Design review/Demonstration |
 
 ## 8. Non-functional requirements
@@ -192,20 +194,22 @@ Compliance with a requirement shall be demonstrated by the applicable method of 
 | MKA-014 | Flare is detected in a valid measurement and the deflection is within limits. | The flare is recorded; it does not cause rejection by itself, and the outcome is "Accepted". |
 | MKA-015 | Orientation cannot be determined and all other measurements are valid. | The orientation is recorded as "Unknown"; orientation uncertainty does not change the acceptance/rejection outcome. |
 | MKA-017 | Stored logs and raw data must be archived or deleted under an external IT/operations policy. | The application does not perform automatic age-based deletion; the data can be managed outside the application. |
-| MKA-018 | PLC and manual inspection requests are issued while the system is Ready. | The first request received starts exactly one inspection and its source is recorded. The later request does not create another inspection while the first inspection is active or its result transaction is incomplete. |
+| MKA-018 | An inspection request is issued from the selected PLC source while the system is Ready, followed by another request before the first result transaction is complete. | Exactly one inspection starts; its selected PLC source is recorded, and the later request does not create another inspection until the result transaction is complete and the interface has re-armed. |
 | MKA-019 | Built-in PLC and Live Cameras are selected, with the cameras ready and no physical PLC connected. The user opens the Built-in PLC window and issues an inspection request. | The system receives the request through the approved PLC protocol, creates one inspection, and displays its status and result values in the independent window. The record identifies Built-in PLC and Live Cameras as the sources. |
 | MKA-020 | A Built-in PLC inspection request remains active; the user then clears it and sends result acknowledgement from the Built-in PLC window. | The active request does not create a second inspection. The result remains unchanged until valid acknowledgement; after acknowledgement, the result fields are cleared and a new request is accepted only after the interface has re-armed. No request or result is exchanged with External PLC. |
 | MKA-021 | Each PLC source is selected in turn with each 3D data source, with the selected sources ready. | Inspections use the selected PLC and 3D data sources in each of the four combinations. The current selections and sources in each inspection record are visible, and results and counters for the four combinations can be viewed separately. |
 | MKA-022 | The operator changes the PLC or 3D data source selection while an inspection is active or its result awaits acknowledgement. | The active transaction continues with its original sources; the new selection takes effect only after that transaction is complete and the newly selected sources are ready. |
+| MKA-023 | The deflection-limit setting is saved at 0 and 100 mm per metre, then saving a value outside that range is attempted. | Both boundary values are accepted, values outside the range are rejected with a field error, and the default value is 15 mm per metre. |
+| MKA-024 | The selected PLC source does not acknowledge a published result within the configured timeout, first at the default 60 seconds and then at a changed valid setting. | At each timeout the result remains valid and unchanged, a visible and recorded timeout prevents a new inspection, and Ready returns only after the agreed handshake recovery sequence. |
 
-## 11. Customer inputs and responsibilities
+## 10. Customer inputs and responsibilities
 
 The customer or a party authorised by the customer shall provide and approve the following inputs:
 
 - Measurement ranges and references against which the 10 mm repeatability parameter will be verified
 - Confirmation of the production deflection limit per metre when a value other than the default 15 mm per metre is required
 - Placement, field of view, and calibration references for the three cameras
-- PLC protocol, tag list, and data types
+- PLC protocol, tag list, data types, and timeout recovery sequence
 - Acceptance/rejection business rules and line behaviour in the event of failure
 - Reference logs/datasets and expected results
 - Disk quota, archiving, backup, and deletion policy for raw data and logs, to be operated outside the application
@@ -215,13 +219,13 @@ The customer or a party authorised by the customer shall provide and approve the
 The affected requirements cannot receive final verification until these inputs have been provided.
 
 
-## 12. Traceability and change management
+## 11. Traceability and change management
 
 Each customer requirement is tracked by a unique `CR-*` identifier. System requirements, design items, and acceptance tests shall reference the relevant customer-requirement identifier.
 
 After approval, changes to scope, business rules, interfaces, or acceptance criteria shall be managed through a written change request. At a minimum, the change request shall identify the affected requirements, cost/schedule impact, verification needs, and approving parties.
 
-## 13. Assumptions and dependencies
+## 12. Assumptions and dependencies
 
 - The log is presented in a mechanically suitable position within the camera field of view and remains sufficiently stable during measurement.
 - The camera, PLC, network, and computer hardware are suitable for production conditions and are operational.
@@ -234,4 +238,5 @@ After approval, changes to scope, business rules, interfaces, or acceptance crit
 
 | Version | Date | Change |
 |---|---|---|
+| 0.6 | 1 October 2026 | Replaced manual inspection with Built-in PLC requests; defined the PLC acknowledgement timeout and deflection-limit range; corrected section numbering. |
 | 0.5 | 1 October 2026 | Added independent PLC and 3D data source selection, Built-in PLC window, and related acceptance scenarios. |

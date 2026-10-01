@@ -35,5 +35,5 @@ This directory organizes the project documentation according to the V-Model. The
 
 ## Current documents
 
-- `01_Requirements/01_Customer_Requirements/CUSTOMER_REQUIREMENTS_DOCUMENT.md`
+- `01_Requirements/01_Customer_Requirements/CUSTOMER_REQUIREMENTS.md`
 - `01_Requirements/02_System_Requirements/SYSTEM_REQUIREMENTS.md`
